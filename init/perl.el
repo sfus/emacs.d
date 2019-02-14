@@ -41,6 +41,9 @@
 
 (defun my/cperl-mode-hook ()
   (hs-minor-mode 1)
+  ;;;;+ Extra
+  (set (make-local-variable 'ac-auto-start) t)
+  ;;;;
 
   ;; my own imenu. cperl imenu is too many information for me
   (setq imenu-create-index-function 'my/cperl-imenu-create-index))

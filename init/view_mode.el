@@ -1,6 +1,10 @@
 ;; view-mode
 (custom-set-variables
- '(view-read-only t))
+ '(view-read-only t)
+ ;;;;+ Extra
+ '(view-inhibit-help-message t)
+ ;;;;+
+ )
 
 (with-eval-after-load 'view
   (define-key view-mode-map (kbd "N") 'View-search-last-regexp-backward)

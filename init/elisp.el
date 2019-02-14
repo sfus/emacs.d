@@ -8,12 +8,13 @@
   (add-hook hook 'elisp-slime-nav-mode))
 
 (custom-set-variables
- '(eldoc-idle-delay 0.2))
+ '(eldoc-idle-delay 0.5))
 
 (setq-default edebug-inhibit-emacs-lisp-mode-bindings t)
 
 (defun my/elisp-mode-hook ()
   ;;(setq ac-sources '(ac-source-features ac-source-functions ac-source-variables))
-  (setq-local company-backends '(company-elisp (company-dabbrev-code company-keywords) company-dabbrev)))
+  (setq-local company-backends '(company-elisp (company-dabbrev-code company-keywords) company-dabbrev))
+  (setq-local tab-width 8))
 
 (add-hook 'emacs-lisp-mode-hook 'my/elisp-mode-hook)

@@ -7,8 +7,8 @@
 ;; warning for perl
 (setenv "LANG" "ja_JP.UTF-8")
 
-;; for yosemite
-(fringe-mode -1)
+;; ;; for yosemite
+;; (fringe-mode -1)
 
 (unless (featurep 'mozc)
   (setq default-input-method "MacOSX"))
@@ -16,29 +16,29 @@
 ;; key config
 (global-set-key (kbd "C-x ?") 'dash-at-point)
 
-;; font setting
-(set-face-attribute 'default nil
-                    :family "monaco"
-                    :height 140)
-(set-fontset-font
- (frame-parameter nil 'font)
- 'japanese-jisx0208
- '("Hiragino Maru Gothic Pro" . "iso10646-1"))
-(set-fontset-font
- (frame-parameter nil 'font)
- 'japanese-jisx0212
- '("Hiragino Maru Gothic Pro" . "iso10646-1"))
-(set-fontset-font
- (frame-parameter nil 'font)
- 'katakana-jisx0201
- '("Hiragino Maru Gothic Pro" . "iso10646-1"))
-(set-fontset-font
- (frame-parameter nil 'font)
- 'mule-unicode-0100-24ff
- '("monaco" . "iso10646-1"))
-(set-fontset-font
- t 'symbol
- (font-spec :family "Apple Color Emoji") nil 'prepend)
+;; ;; font setting
+;; (set-face-attribute 'default nil
+;;                     :family "monaco"
+;;                     :height 140)
+;; (set-fontset-font
+;;  (frame-parameter nil 'font)
+;;  'japanese-jisx0208
+;;  '("Hiragino Maru Gothic Pro" . "iso10646-1"))
+;; (set-fontset-font
+;;  (frame-parameter nil 'font)
+;;  'japanese-jisx0212
+;;  '("Hiragino Maru Gothic Pro" . "iso10646-1"))
+;; (set-fontset-font
+;;  (frame-parameter nil 'font)
+;;  'katakana-jisx0201
+;;  '("Hiragino Maru Gothic Pro" . "iso10646-1"))
+;; (set-fontset-font
+;;  (frame-parameter nil 'font)
+;;  'mule-unicode-0100-24ff
+;;  '("monaco" . "iso10646-1"))
+;; (set-fontset-font
+;;  t 'symbol
+;;  (font-spec :family "Apple Color Emoji") nil 'prepend)
 
 (setq-default face-font-rescale-alist
               '(("^-apple-hiragino.*" . 1.2)
@@ -68,4 +68,32 @@
  '(evil-move-cursor-back nil)
  '(evil-search-module 'evil-search))
 
-(define-key my/ctrl-q-map (kbd "e") 'evil-mode)
+;; (define-key my/ctrl-q-map (kbd "e") 'evil-mode)
+
+
+
+;;;;+ Extra
+
+(prefer-coding-system 'utf-8)
+
+;;; Mac UTF-8 HFS filename normalize
+(require 'ucs-normalize)
+(setq file-name-coding-system 'utf-8-hfs)
+(setq locale-coding-system 'utf-8-hfs)
+
+(when (locate-library "east-asian-ambiguous")
+  (load "east-asian-ambiguous")
+  (set-east-asian-ambiguous-width 2))
+
+;;; synchronize kill-ring and Mac's clipboard
+;; http://qiita.com/tstomoki/items/24d63217f797c6929a23
+(when (eq window-system nil) ;; Mac terminal
+  (defun copy-from-osx ()
+    (shell-command-to-string "pbpaste"))
+  (defun paste-to-osx (text &optional push)
+    (let ((process-connection-type nil))
+      (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+        (process-send-string proc text)
+        (process-send-eof proc))))
+  (setq interprogram-cut-function 'paste-to-osx)
+  (setq interprogram-paste-function 'copy-from-osx))

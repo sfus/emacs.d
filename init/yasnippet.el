@@ -36,3 +36,15 @@
 (defun my-yas/parent-directory ()
   (let ((curdir (directory-file-name (file-name-directory (buffer-file-name)))))
     (file-name-nondirectory curdir)))
+
+;;;;+ Extra
+
+;;; yasnippet-snippets
+;; -> https://github.com/joaotavora/yasnippet/blob/master/yasnippet.el
+
+;; Fix ac-define-source of auto-complete-config.el
+(defalias 'yas/expand 'yas-expand)
+
+(when (require 'yasnippet-snippets nil t)
+  (define-key help-map (kbd "y") 'yas-describe-tables)
+  ) ;; yasnippet-snippets

@@ -1,6 +1,6 @@
 ;; setting of auto-complete
 (ac-config-default)
-(remove-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
+;;(remove-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
 
 ;; Enable auto-complete mode other than default enable modes
 (dolist (mode '(git-commit-mode
@@ -10,7 +10,11 @@
                 markdown-mode
                 fundamental-mode
                 org-mode
-                text-mode))
+                text-mode
+                ;;;;+ Extra
+                slime-repl-mode
+                ;;;;+
+                ))
   (add-to-list 'ac-modes mode))
 
 (custom-set-variables
@@ -29,3 +33,9 @@
 (global-set-key (kbd "C-M-i") 'auto-complete)
 (define-key lisp-interaction-mode-map (kbd "C-M-i") 'auto-complete)
 (define-key emacs-lisp-mode-map (kbd "C-M-i") 'auto-complete)
+
+;; Slime
+(with-eval-after-load 'sly
+  (require 'ac-slime nil t)
+  (add-hook 'slime-mode-hook 'set-up-slime-ac)
+  (add-hook 'slime-repl-mode-hook 'set-up-slime-ac))

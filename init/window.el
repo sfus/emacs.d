@@ -3,9 +3,18 @@
 ;; popwin
 (require 'popwin)
 
-(defvar popwin:special-display-config-backup popwin:special-display-config)
-(custom-set-variables
- '(display-buffer-function 'popwin:display-buffer))
+;; ;; comment out to avoid always open in other window
+;; (defvar popwin:special-display-config-backup popwin:special-display-config)
+;; (custom-set-variables
+;;  '(display-buffer-function 'popwin:display-buffer))
+
+(popwin-mode 1)
+
+;; (custom-set-variables
+;;  '(special-display-function 'popwin:special-display-popup-window)
+;;  ;;'(special-display-buffer-names '("*Help*"))
+;;  '(special-display-regexps '("\*Help\*"))
+;;  )
 
 ;; remove from default config
 (dolist (stuff '("*vc-diff*" "*vc-change-log*"))
@@ -36,3 +45,29 @@
 
 ;; Clojure
 (push '(cider-repl-mode :stick t) popwin:special-display-config)
+
+
+;;;;+ Extra
+;; ;;++
+;; ;; Direx
+;; (push '(direx:direx-mode :position left :width 40 :dedicated t) popwin:special-display-config)
+
+;; Slime
+;;   Apropos
+(push '("*slime-apropos*") popwin:special-display-config)
+;;   Macroexpand
+(push '("*slime-macroexpansion*") popwin:special-display-config)
+;;   Help
+(push '("*slime-description*") popwin:special-display-config)
+;;   Compilation
+(push '("*slime-compilation*" :noselect t) popwin:special-display-config)
+;;   Cross-reference
+(push '("*slime-xref*") popwin:special-display-config)
+;;   Debugger
+(push '(sldb-mode :stick t) popwin:special-display-config)
+;;   REPL
+(push '(slime-repl-mode) popwin:special-display-config)
+;;   Connections
+(push '(slime-connection-list-mode) popwin:special-display-config)
+
+;;;;+

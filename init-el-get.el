@@ -14,18 +14,20 @@
 (el-get-bundle purcell/exec-path-from-shell)
 
 ;; My Utilities
-(el-get-bundle syohex/emacs-editutil :name editutil)
-(el-get-bundle syohex/emacs-progutil :name progutil)
+;; (el-get-bundle syohex/emacs-editutil :name editutil)
+;; (el-get-bundle syohex/emacs-progutil :name progutil)
+(el-get-bundle sfus/emacs-editutil :name editutil)
+(el-get-bundle sfus/emacs-progutil :name progutil)
 
 ;; Theme
 (el-get-bundle syohex/emacs-syohex-theme :name syohex-theme
   (add-to-list 'custom-theme-load-path default-directory))
 
-;; Input method
-(when (executable-find "mozc_emacs_helper")
-  (el-get-bundle mozc
-    :type http
-    :url "https://raw.githubusercontent.com/google/mozc/master/src/unix/emacs/mozc.el"))
+;; ;; Input method
+;; (when (executable-find "mozc_emacs_helper")
+;;   (el-get-bundle mozc
+;;     :type http
+;;     :url "https://raw.githubusercontent.com/google/mozc/master/src/unix/emacs/mozc.el"))
 
 ;; undo
 (el-get-bundle undo-tree)
@@ -55,8 +57,8 @@
 
 ;; auto-complete
 (el-get-bundle auto-complete/popup-el :name popup)
-;; (el-get-bundle auto-complete/fuzzy-el :name fuzzy)
-;; (el-get-bundle auto-complete/auto-complete)
+(el-get-bundle auto-complete/fuzzy-el :name fuzzy)
+(el-get-bundle auto-complete/auto-complete)
 
 ;; company
 (el-get-bundle company-mode/company-mode :name company-mode)

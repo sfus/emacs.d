@@ -32,3 +32,8 @@
 
 (dolist (hook '(lisp-mode-hook))
   (add-hook hook 'sly-mode))
+
+;;;;+ Extra
+;; -> https://www.common-lisp.net/project/slime/doc/html/index.html
+;; -> http://dev.ariel-networks.com/wp/archives/462
+;;;;+

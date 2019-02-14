@@ -1,66 +1,18 @@
 #!/bin/sh
 
+# get script located dir
+DIR=$(cd $(dirname $0);pwd)
+
 set -e
 set -x
 
 # Emacs
 install -d ~/.emacs.d
-ln -sf ${PWD}/emacs/init.el ~/.emacs.d/init.el
-ln -sf ${PWD}/emacs/my_snippets ~/.emacs.d/
-ln -sf ${PWD}/emacs/ac-dict ~/.emacs.d/
-ln -sf ${PWD}/emacs/init-el-get.el ~/.emacs.d
-ln -sf ${PWD}/emacs/init-loader ~/.emacs.d
-
-## Use Emacs.app instead of pre-installed emacs on MacOSX
-EMACS_CLIENT_APP_PATH='/Applications/Emacs.app/Contents/MacOS/bin/emacsclient'
-case "$OSTYPE" in
-    darwin*)
-        echo "Set up for MacOSX"
-        install -d ~/bin
-        ln -sf ${EMACS_CLIENT_APP_PATH} ~/bin/emacsclient
-        ;;
-esac
-
-# zsh
-install -d ~/.zsh
-ln -sf $PWD/shell/zshrc ~/.zshrc
-ln -sf $PWD/shell/functions ~/.zsh/
-
-# tmux
-ln -sf $PWD/shell/tmux.conf ~/.tmux.conf
-
-# aspell
-ln -sf $PWD/aspell.conf ~/.aspell.conf
-
-# Spellunker
-ln -sf $PWD/perl/spellunker.en ~/.spellunker.en
-
-# Python
-## REPL
-install -d ~/.config
-ln -sf $PWD/python/pythonsetup ~/.pythonsetup
-ln -sf $PWD/python/flake8 ~/.config/flake8
-
-## ipython
-IPYTHON_DIR=${HOME}/.config/ipython/profile_default
-install -d ${IPYTHON_DIR}
-ln -sf $PWD/python/ipython_config.py $IPYTHON_DIR
-
-## golang
-PECO_DIR=~/.peco
-install -d ${PECO_DIR}
-ln -sf $PWD/golang/config.json ${PECO_DIR}/config.json
-
-# Ruby
-ln -sf $PWD/ruby/gemrc ~/.gemrc
-ln -sf $PWD/ruby/rubocop.yml ~/.rubocop.yml
-ln -sf $PWD/ruby/pryrc ~/.pryrc
-
-# For Common Lisp
-#ln -sf $PWD/common_lisp/clisprc.lisp ~/.clisprc.lisp
-
-# haskell
-ln -sf $PWD/haskell/ghci ~/.ghci
-
-# Firefox
-ln -sf $PWD/firefox/vimperatorrc ~/.vimperatorrc
+install -d ~/.emacs.d/lisp
+ln -sf ${DIR}/init.el ~/.emacs.d/init.el
+ln -sf ${DIR}/init.sh ~/.emacs.d/init.sh
+ln -sf ${DIR}/my_snippets ~/.emacs.d/
+ln -sf ${DIR}/ac-dict ~/.emacs.d/
+ln -sf ${DIR}/init-el-get.el ~/.emacs.d/
+ln -sf ${DIR}/init-el-get-extra.el ~/.emacs.d/
+ln -sf ${DIR}/init-loader ~/.emacs.d/

@@ -1,9 +1,11 @@
 ;; elscreen
 (elscreen-start)
-(global-set-key (kbd "C-z C-z") 'elscreen-toggle)
-(global-set-key (kbd "C-z ,") 'elscreen-screen-nickname)
-(global-set-key (kbd "C-z C") 'elscreen-editutil-clone-only-this-window)
-(global-set-key (kbd "C-z C-l") 'helm-editutil-elscreen)
+;;;;+ Extra
+;; (global-set-key (kbd "C-z C-z") 'elscreen-toggle)
+;; (global-set-key (kbd "C-z ,") 'elscreen-screen-nickname)
+;; (global-set-key (kbd "C-z C") 'elscreen-editutil-clone-only-this-window)
+;; (global-set-key (kbd "C-z C-l") 'helm-editutil-elscreen)
+;;;;+
 (run-with-idle-timer 20 t 'elscreen-editutil-update-frame-title)
 
 (custom-set-variables
@@ -23,3 +25,16 @@
 (remove-hook 'elscreen-screen-update-hook 'elscreen-mode-line-update)
 (add-hook 'elscreen-screen-update-hook 'elscreen-editutil-update-frame-title)
 (elscreen-toggle-display-tab)
+
+
+;;;;+ Extra
+
+(with-eval-after-load "projectile"
+  (define-key elscreen-map (kbd "C-z") 'elscreen-toggle)
+  (define-key elscreen-map (kbd ",") 'elscreen-screen-nickname)
+  (define-key elscreen-map (kbd "C") 'elscreen-editutil-clone-only-this-window)
+  ;; Change elscreen-prefix "C-z" to "C-z C-z"
+  (define-key projectile-command-map (kbd "C-z") elscreen-map)
+
+  (define-key global-map (kbd "C-z C-l") 'helm-editutil-elscreen)
+  (define-key global-map (kbd "M-t") 'elscreen-create))

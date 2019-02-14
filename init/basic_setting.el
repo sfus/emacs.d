@@ -19,7 +19,7 @@
  '(read-file-name-completion-ignore-case t)
  '(set-mark-command-repeat-pop t)
  '(text-quoting-style 'grave)
- '(user-full-name "Syohei YOSHIDA")
+;; '(user-full-name "Syohei YOSHIDA")
  '(custom-file (concat user-emacs-directory "custom.el")))
 
 ;; Frame and cursor looking
@@ -34,7 +34,8 @@
   (tool-bar-mode 0))
 
 ;; for GC
-(setq-default gc-cons-threshold (* gc-cons-threshold 10))
+;;(setq-default gc-cons-threshold (* gc-cons-threshold 10))
+(setq-default gc-cons-threshold (* 256 1024 1024)) ;; 256MB
 
 (setq-default echo-keystrokes 0)
 ;; I never use C-x C-c
@@ -83,6 +84,11 @@
 (global-undo-tree-mode)
 (define-key undo-tree-map (kbd "C-/") 'undo-tree-undo)
 (define-key undo-tree-map (kbd "M-_") 'nil)
+;;;;+ Extra
+(global-set-key (kbd "C-S-/") 'undo-tree-redo) ;; C-S-/ => redo
+(global-set-key (kbd "C-M-_") 'undo-tree-redo) ;; C-M-_ => redo (Esc C-/ on console)
+(setq undo-tree-mode-lighter nil) ;; delete minor-mode in mode-line
+;;;;+
 
 (setq-default fill-column 80)
 
@@ -117,3 +123,43 @@
 (which-key-mode +1)
 
 (winner-mode +1)
+
+
+;;;++ Extra
+;;; Load my own edit utility functions
+(require 'editutil-extra nil t)
+
+(setq garbage-collection-messages t)
+
+;;; Edit default
+(setq-default tab-width 4)              ;; tab 幅
+(setq-default truncate-partial-width-windows t);; 左右分割時には切り捨てる
+
+;;; Scrolling
+(setq scroll-step 1)                    ;; 画面から出たときにスクロールさせる列数
+(setq scroll-conservatively 101)        ;; カーソルを再表示する行数の閾値 (100超なら再表示しない)
+(setq scroll-margin 2)                  ;; ポイントをウィンドウ上下端に近づけられる行数
+(setq fast-but-imprecise-scrolling t)   ;; スクロールを高速化 (25.1以降)
+
+;;; Others
+(setq enable-recursive-minibuffers t)   ;; 再帰編集を可能に ;; default: nil
+(setq kill-read-only-ok t)              ;; Read Onlyなバッファでもkillでコピー可能に
+(setq delete-by-moving-to-trash t)      ;; ごみ箱を有効に
+(delete-selection-mode 1)               ;; 選択状態で入力した際に元のテキストを消す
+
+;;; remember-notes
+(setq initial-buffer-choice 'remember-notes)
+(setq remember-data-file "~/.emacs.d/notes.org");; default: "~/.emacs.d/notes"
+(setq remember-notes-initial-major-mode 'org-mode)
+
+;;; edebug
+(setq debug-on-error nil)
+(setq eval-expression-print-level nil)
+(setq eval-expression-print-length nil)
+(setq eval-expression-debug-on-error nil)
+(setq edebug-print-length 1000)
+(setq edebug-print-level 1000)
+
+;; ;;; word boundary
+;; (modify-syntax-entry ?- "w" emacs-lisp-mode-syntax-table)
+;; (modify-syntax-entry ?- "w" org-mode-syntax-table)

@@ -55,3 +55,53 @@
 (custom-set-variables
  '(emmet-preview-default nil)
  '(emmet-indentation 2))
+
+
+;;;;+ Extra
+(setq web-mode-markup-indent-offset 2)
+;; (setq web-mode-code-indent-offset 2)
+;; (setq web-mode-html-offset   2)
+;; (setq web-mode-css-offset    2)
+;; (setq web-mode-script-offset 4)
+;; (setq web-mode-php-offset    4)
+;; (setq web-mode-java-offset   4)
+;; (setq web-mode-asp-offset    4)
+;; (setq indent-tabs-mode nil)
+;; (setq tab-width 2)
+
+(setq web-mode-enable-auto-quoting nil)
+
+;; whitespace
+(setq web-mode-enable-whitespace-fontification t)
+(setq web-mode-display-table
+      (let ((table (make-display-table)))
+        ;;(aset table 9  (vector ?\xB7 ?\t)) ;tab
+        (aset table 9  (vector ?\xBB ?\t)) ;tab
+        ;; (aset table 10 (vector ?\;XXX: B6 ?\n)) ;line feed
+        ;; (aset table 32 (vector ?\xB7))
+        table))
+
+;; faces
+(custom-set-faces
+ '(web-mode-doctype-face
+   ((t (:foreground "#82AE46"))))                         ; doctype
+ '(web-mode-html-tag-face
+   ((t (:foreground "#E6B422" :weight bold))))            ; tag
+ '(web-mode-html-attr-name-face
+   ((t (:foreground "#C97586"))))                         ; attr-name
+ '(web-mode-html-attr-value-face
+   ((t (:foreground "#82AE46"))))                         ; attr-value
+ '(web-mode-comment-face
+   ((t (:foreground "#999999"))))                         ; comment
+ '(web-mode-server-comment-face
+   ((t (:foreground "#999999"))))                         ; comment
+ '(web-mode-css-rule-face
+   ((t (:foreground "#A0D8EF"))))                         ; css
+ '(web-mode-css-pseudo-class-face
+   ((t (:foreground "#FF7F00"))))                         ; css pseudo class
+ '(web-mode-css-at-rule-face
+   ((t (:foreground "#FF7F00"))))                         ; css
+ '(web-mode-whitespace-face
+   ((t (:foreground "SteelBlue" :underline t :background "dark slate gray"))))
+ )
+;;;;+

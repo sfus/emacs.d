@@ -2,7 +2,7 @@
 *.pch
 
 # for trial my emacs environment
-emacs/ac-comphist.dat
-emacs/elisps/
-emacs/elpa/
-emacs/history
+ac-comphist.dat
+elisps/
+elpa/
+history

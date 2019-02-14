@@ -3,10 +3,10 @@
 # --
 ;;; `(file-name-nondirectory (buffer-file-name))` --- $1 -*- lexical-binding: t; -*-
 
-;; Copyright (C) `(format-time-string "%Y" (current-time))` by Syohei YOSHIDA
+;; Copyright (C) `(format-time-string "%Y" (current-time))` by `user-full-name`
 
-;; Author: Syohei YOSHIDA <syohex@gmail.com>
-;; URL: https://github.com/syohex/
+;; Author: `user-full-name` <`user-mail-address`>
+;; URL: https://github.com/`user-login-name`/
 ;; Version: 0.01
 ;; Package-Requires: ((emacs "24.3"))
 
