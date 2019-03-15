@@ -1,3 +1,5 @@
+(defconst my-before-load-init-time (current-time))
+
 ;; for launcher (package-initialize)
 (unless load-file-name
   (cd (getenv "HOME")))
@@ -9,7 +11,7 @@
 
 ;;;;+ Extra
 ;;; add load-path recursively. https://www.emacswiki.org/emacs/LoadPath
-(let ((default-directory "~/.emacs.d/lisp/"))
+(let ((default-directory (concat user-emacs-directory "lisp/")))
   (normal-top-level-add-subdirs-to-load-path)) ;; this uses `default-directory' variable.
 ;;;;+
 
@@ -45,3 +47,27 @@
 (custom-set-variables
  '(init-loader-show-log-after-init 'error-only))
 (init-loader-load (concat user-emacs-directory "init-loader"))
+
+;; calculate load time
+(defun my-load-init-time ()
+  "Loading time of user init files including time for `after-init-hook'."
+  (let ((time1 (float-time
+                (time-subtract after-init-time my-before-load-init-time)))
+        (time2 (float-time
+                (time-subtract (current-time) my-before-load-init-time))))
+    (message (concat "Loading init files: %.0f [msec], "
+                     "of which %.f [msec] for `after-init-hook'.")
+             (* 1000 time1) (* 1000 (- time2 time1)))))
+
+(add-hook 'after-init-hook #'my-load-init-time t)
+
+(defvar my-tick-previous-time my-before-load-init-time)
+(defun my-tick-init-time (msg)
+  "Tick boot sequence at loading MSG."
+  (when my-loading-profile-p
+    (let ((ctime (current-time)))
+      (message "---- %5.2f[ms] %s"
+               (* 1000 (float-time
+                        (time-subtract ctime my-tick-previous-time)))
+               msg)
+      (setq my-tick-previous-time ctime))))
