@@ -43,6 +43,9 @@
 (setq use-package-enable-imenu-support t) ;; need to be set before (require 'use-package)
 (require 'use-package)
 
+;; defer keywords
+;; -> https://github.com/jwiegley/use-package#modes-and-interpreters
+;; :commands, :bind, :bind*, :bind-keymap, :bind-keymap*, :mode, :interpreter, or :hook
 
 ;;; el-get
 ;; -> https://github.com/edvorg/use-package-el-get
