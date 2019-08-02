@@ -462,9 +462,6 @@ otherwise, execute `dired-view-file'."
    )
 
   :config
-  (with-eval-after-load 'ox
-    (require 'ox-hugo))
-
   (autoload 'org-time-stamp "org" nil t)
 
   ;; word boundary (not treat `-' as word boundary)
@@ -717,6 +714,12 @@ otherwise, execute `dired-view-file'."
     ) ;; org-agenda
   ) ;; org-pomodoro
 
+
+;;; ox-hugo
+;; -> https://ox-hugo.scripter.co/
+(use-package ox-hugo
+  :ensure t
+  :after ox)
 
 ;;; org-capture
 ;; -> https://ox-hugo.scripter.co/doc/org-capture-setup/
