@@ -366,7 +366,7 @@ otherwise, execute `dired-view-file'."
 
 ;;; org-mode
 (use-package org
-  :bind (("C-x L" . org-store-link)
+  :bind (("C-c l" . org-store-link)
          ("C-c a" . org-agenda)
          :map org-mode-map
          ("M-," . org-mark-ring-goto)
@@ -375,13 +375,15 @@ otherwise, execute `dired-view-file'."
          ("C-c <tab>" . outline-show-all)
          ("C-m" . org-return-indent) ;; default: C-j
          ("C-j" . org-return) ;; default: C-m
-         ("C-c i" . org-attach-screenshot)
+         ("C-c i" . org-indent-mode)
+         ("C-c I" . org-attach-screenshot)
          ("C-M-j" . my/org-insert-heading-dwim)
          ("M-j" . org-insert-todo-heading)
          )
   :init
   (custom-set-variables
    '(org-startup-truncated nil)
+   ;;'(org-startup-indented t) ;; default: nil
    ;;'(org-directory (expand-file-name "~/Dropbox/")) ;; default: "~/org"
    ;;'(org-agenda-files (list "~/Tasks/"))
    '(org-agenda-files (list my/org-agenda-root))
@@ -389,6 +391,7 @@ otherwise, execute `dired-view-file'."
    '(org-return-follows-link t)
    '(org-use-fast-todo-selection t)
    '(org-src-fontify-natively t)
+   '(org-goto-auto-isearch nil) ;; default: t
    ;;'(org-default-notes-file (concat org-directory "organizer.org"))
    '(org-default-notes-file  (concat my/org-agenda-root "inbox.org")) ;; default: "~/.notes"
    ;;'(org-default-priority ?A)
@@ -397,7 +400,7 @@ otherwise, execute `dired-view-file'."
    '(org-imenu-depth 3)
    '(org-todo-keywords
      ;;'((sequence "TODO(t)" "DOING(d)" "|" "DONE(x)" "BLOCKED(b)" "CANCEL(c)" "NO_ACTION(n)"))
-     '((sequence "TODO(t)" "NEXT(n)" "DOING(d!)" "|" "DONE(x!)")
+     '((sequence "TODO(t)" "NEXT(n)" "DOING(d!)" "BREAK(b)" "|" "DONE(x!)")
        (sequence "WAITING(w!)" "SOMEDAY(s)" "|" "CANCELED(c!)")))
    '(org-todo-keyword-faces
      '(;; ("TODO" . org-warning)
@@ -413,18 +416,24 @@ otherwise, execute `dired-view-file'."
        ("WAITING" . "firebrick1")
        ("SOMEDAY" . "brown1")
        ("CANCELED" . "SteelBlue")
+       ("BREAK" . "grey")
        ))
+   '(org-global-properties '(("Effort_ALL" . "0:30 1:00 1:30 2:00 2:30 3:00 3:30 4:00 4:30 0:10")))
 
    ;;'(org-startup-folded nil) ;; default: t
    ;;'(org-yank-adjusted-subtrees t) ;; default: nil
-   '(org-columns-default-format "%25ITEM %TODO %3PRIORITY %CLOCKSUM %EFFORT") ;; default: "%25ITEM %TODO %3PRIORITY %TAGS"
+   ;;; -> https://orgmode.org/manual/Column-attributes.html#Column-attributes
+   '(org-columns-default-format "%60ITEM %TODO %3PRIORITY %8EFFORT(Estimate){:} %8CLOCKSUM(Total){:} %8CLOCKSUM_T(Today){:}") ;; default: "%25ITEM %TODO %3PRIORITY %TAGS"
    ;;'(org-columns-default-format "%25ITEM %TODO %3PRIORITY %CLOCKSUM %EFFORT %SCHEDULED %DEADLINE")
+   '(org-agenda-columns-add-appointments-to-effort-sum t)
    '(org-agenda-span 'day) ;; default: 'week (change by `d'/`w' or `v')
    '(org-agenda-include-deadlines nil) ;; default: t (toggle by `!')
    '(org-agenda-todo-ignore-scheduled 'future) ;; default: nil (toggle by `@' key by my function)
-   ;;'(org-agenda-start-with-log-mode t) ;; default: nil
+   '(org-agenda-start-with-log-mode t) ;; default: nil
+   '(org-agenda-log-mode-items '(state)) ;; default: '(closed clock)
    '(org-clock-in-switch-to-state "DOING")
-   '(org-stuck-projects '("+LEVEL=2/-DONE" ("TODO" "NEXT" "DOING" "WAITING") nil ""))
+   '(org-clock-out-switch-to-state "BREAK")
+   '(org-stuck-projects '("+LEVEL=2/-DONE" ("TODO" "NEXT" "DOING" "BREAK" "WAITING") nil ""))
    '(org-refile-targets (mapcar (lambda (category)
                                   (cons (concat my/org-agenda-root category ".org") '(:level . 1)))
                                 my/org-agenda-category-list))
@@ -433,9 +442,13 @@ otherwise, execute `dired-view-file'."
    '(org-archive-reversed-order t) ;; default: nil
    ;;'(org-archive-default-command 'org-archive-to-archive-sibling) ;; default: 'org-archive-subtree
    '(org-log-done 'time)
-   ;;'(org-log-into-drawer t);; https://orgmode.org/manual/Tracking-TODO-state-changes.html
+   '(org-log-into-drawer t) ;; https://orgmode.org/manual/Tracking-TODO-state-changes.html
+   '(org-clock-into-drawer "CLOCKLOG") ;; https://orgmode.org/manual/Clocking-commands.html
+
    ;;'(org-log-refile t) ;; default: nil
    '(org-tags-column -120) ;; default: -77
+   '(org-agenda-tags-column -120) ;; default: 'auto
+   '(org-tag-alist '(("@1st" . ?1) ("@Zone" . ?z) ("@Break" . ?b) ("@Pocket" . ?p)))
    '(org-reverse-note-order t) ;; default: nil
    '(org-capture-templates
      `(("a" "Business #A" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
@@ -459,6 +472,8 @@ otherwise, execute `dired-view-file'."
        ))
    ;; https://qiita.com/takaxp/items/a5a3383d7358c58240d0
    '(org-use-speed-commands t)
+   ;; http://zhongweiy.github.io/blog/2016/02/03/solve-error-emacs-not-compiled-with-dbus-support/
+   '(org-show-notification-handler (lambda (msg) msg))
    )
 
   :config
@@ -470,14 +485,22 @@ otherwise, execute `dired-view-file'."
   ;; function of org-open-at-point
   (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file)
 
+  ;; org-id
+  (use-package org-id
+    :config
+    (custom-set-variables
+     '(org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id)
+     )) ;; org-id
+
+  ;; smartrep
   (use-package smartrep
     :ensure t
     :config
     (smartrep-define-key
-        org-mode-map "C-c" '(("h" . 'org-metaleft)
-                             ("j" . 'org-metadown)
-                             ("k" . 'org-metaup)
-                             ("l" . 'org-metaright)
+        org-mode-map "C-c" '(;;("C-h" . 'org-metaleft)
+                             ;;("C-j" . 'org-metadown)
+                             ;;("C-k" . 'org-metaup)
+                             ;;("C-l" . 'org-metaright)
                              ("H" . 'org-shiftleft)
                              ("J" . 'org-shiftdown)
                              ("K" . 'org-shiftup)
@@ -515,11 +538,13 @@ otherwise, execute `dired-view-file'."
       (t  (org-insert-heading-respect-content    nil))))
   ) ;; org-mode
 
+
 ;;; org-colview
 (use-package org-colview
   :bind (:map org-columns-map
               ("e" . org-agenda-set-effort) ;; default: org-columns-edit-value
               ("r" . org-columns-edit-value) ;; default: org-columns-redo (equals `g')
+              ("g" . org-agenda-columns)    ;; default: org-columns-redo
               )
   ) ;; org-colview
 
@@ -528,6 +553,7 @@ otherwise, execute `dired-view-file'."
 (use-package org-agenda
   :bind (("M-q" . my/org-agenda-all-todo-one-window)
          :map org-agenda-mode-map
+         ("C-c C-c" . org-agenda-set-tags)  ;; default `:', `C-c C-q`
          ("M-q" . org-agenda-redo-all)
          ("j" . org-agenda-next-item) ;; default: org-agenda-goto-date
          ("k" . org-agenda-previous-item) ;; default: org-agenda-capture
@@ -535,26 +561,57 @@ otherwise, execute `dired-view-file'."
          ("l" . my/org-agenda-todo-state-change-right) ;; default: org-agenda-log-mode
          ("L" . org-agenda-log-mode) ;; default: org-agenda-recenter
          ("c" . org-agenda-capture) ;; default: org-agenda-goto-calendar
+         ("S" . my/org-agenda-postpone-schedule-to-tomorrow) ;; default: org-agenda-sunrise-sunset
          ("@" . my/org-agenda-toggle-future-tasks)
          ("`" . my/org-agenda-toggle-category)
-         ("\\" . org-agenda-columns) ;; default: C-c C-x C-c
-         ("M-\\" . my/org-agenda-toggle-org-columns-default-format))
+         ("\\" . my/org-agenda-columns-toggle) ;; org-agenda-columns: C-c C-x C-c
+         ("M-\\" . my/org-agenda-toggle-org-columns-default-format)
+         ("M-/" . my/org-agenda-toggle-tag-filter))
 
   :init
-  (defvar my/org-agenda-root "~/org/agenda/")
+  (defvar my/org-agenda-root "~/Dropbox/org/agenda/")
   (defvar my/org-agenda-category-business "business")
   (defvar my/org-agenda-category-private "private")
   (defvar my/org-agenda-category-list (list my/org-agenda-category-business my/org-agenda-category-private))
   (defvar my/org-agenda-category-index -1)
-  (defvar my/org-agenda-series '("DOING" "NEXT" "TODO" "WAITING" "DONE"))
+  (defvar my/org-agenda-series '("DOING" "BREAK" "NEXT" "TODO" "WAITING" "DONE"))
+  (defvar my/org-agenda-toggle-columns '(" %8EFFORT(Estimate){:}" " %8CLOCKSUM(Total){:}" "%8CLOCKSUM_T(Today){:}" " %SCHEDULED(Plan)" " %DEADLINE(Due)"))
+  (defvar my/org-agenda-tag-filter-list '("@1st" "@Zone" "@Pocket" "@Break"))
+  (defvar my/org-agenda-tag-filter-index -1)
 
   :config
   (require 'org-habit)
-  (add-to-list 'org-speed-commands-user '("i" org-pomodoro)) ;; default: (progn (forward-char 1) (call-interactively 'org-insert-heading-respect-content))
-  (with-eval-after-load 'org-agenda
-    (define-key org-agenda-mode-map (kbd "i") 'org-pomodoro) ;; default: org-agenda-diary-entry
+  ;;(add-to-list 'org-speed-commands-user '("i" my/org-pomodoro)) ;; default: (progn (forward-char 1) (call-interactively 'org-insert-heading-respect-content))
 
-  ;; org-agenda
+  ;; with-eval-after-load 'org-agenda
+  (with-eval-after-load 'org-agenda
+    (define-key org-agenda-mode-map (kbd "i") 'my/org-pomodoro) ;; default: org-agenda-diary-entry
+
+    ;; prevent current line disappear and keep cursor position on changing effort within column view
+    (defadvice org-agenda-set-effort (after my/org-agenda-set-effort-redo activate)
+      (if org-agenda-columns-active
+          (let ((pos (point)))
+            (org-columns-redo)
+            (goto-char pos))))
+    (defadvice org-agenda-priority-up (after my/org-agenda-priority-up-redo activate)
+      (if org-agenda-columns-active
+          (let ((pos (point)))
+            (org-columns-redo)
+            (goto-char pos))))
+    (defadvice org-agenda-priority-down (after my/org-agenda-priority-down-redo activate)
+      (if org-agenda-columns-active
+          (let ((pos (point)))
+            (org-columns-redo)
+            (goto-char pos))))
+    (defadvice org-agenda-todo (after my/org-agenda-todo-redo activate)
+      (if org-agenda-columns-active
+          (let ((pos (point)))
+            (org-columns-redo)
+            (goto-char pos)
+            (beginning-of-line))))
+
+    ) ;; with-eval-after-load 'org-agenda
+
   (defun my/org-agenda-todo-state-change-right ()
     (interactive)
     (org-agenda-todo 'right))
@@ -563,6 +620,10 @@ otherwise, execute `dired-view-file'."
     (interactive)
     (org-agenda-todo 'left))
 
+  (defun my/org-agenda-postpone-schedule-to-tomorrow ()
+    (interactive)
+    (org-agenda-schedule nil "+1d"))
+
   (defun my/org-agenda-toggle-future-tasks ()
     (interactive)
     (setq org-agenda-todo-ignore-scheduled
@@ -570,13 +631,19 @@ otherwise, execute `dired-view-file'."
     (org-agenda-redo-all)
     (message (format "Future tasks inclusion %s" (if org-agenda-todo-ignore-scheduled "off" "on"))))
 
+  (defun my/org-agenda-columns-toggle ()
+    (interactive)
+    (if org-agenda-columns-active
+        (org-columns-quit)
+      (org-agenda-columns)))
+
   (defun my/org-agenda-toggle-org-columns-default-format ()
     (interactive)
-    (dolist (item '(" %CLOCKSUM" " %EFFORT" " %SCHEDULED" " %DEADLINE"))
+    (dolist (item my/org-agenda-toggle-columns)
       (if (string-match item org-columns-default-format)
           (setq org-columns-default-format (replace-regexp-in-string item "" org-columns-default-format))
         (setq org-columns-default-format (concat org-columns-default-format item))))
-    (org-columns-redo))
+    (org-agenda-columns))
 
   (defun my/org-agenda-change-category (&optional category-index)
     (interactive)
@@ -598,6 +665,27 @@ otherwise, execute `dired-view-file'."
   (defun my/org-agenda-toggle-category ()
     (interactive)
     (my/org-agenda-change-category (1+ my/org-agenda-category-index)))
+
+  (defun my/org-agenda-change-tag-filter (&optional tag-filter-index)
+    (interactive)
+    (let ((index (or tag-filter-index my/org-agenda-tag-filter-index)))
+      (cond ((or (< index 0)
+                 (<= (length my/org-agenda-tag-filter-list) index))
+             (setq index -1)
+             (org-agenda-filter-show-all-tag)
+             (message "Toggle to show all tags"))
+            (t
+             (org-agenda-filter-show-all-tag)
+             (let* ((tag-filter (nth index my/org-agenda-tag-filter-list))
+                    (filter (list (concat "+" tag-filter))))
+               (setq org-agenda-tag-filter filter)
+               (org-agenda-filter-apply filter 'tag)
+               (message "Toggle to tag-filter: %s" tag-filter))))
+      (setq my/org-agenda-tag-filter-index index)))
+
+  (defun my/org-agenda-toggle-tag-filter ()
+    (interactive)
+    (my/org-agenda-change-tag-filter (1+ my/org-agenda-tag-filter-index)))
 
   (defun my/org-agenda-all-todo-one-window ()
     (interactive)
@@ -623,11 +711,9 @@ otherwise, execute `dired-view-file'."
                (if narrow-window
                    (delete-other-windows)))
              (my/org-agenda-change-category my/org-agenda-category-index)))))
-
   ) ;; org-agenda
 
-
-;;; org-pomodoro
+  ;;; org-pomodoro
 (use-package org-pomodoro
   :after org-agenda
   :ensure t
@@ -639,6 +725,8 @@ otherwise, execute `dired-view-file'."
   (setq org-pomodoro-play-sounds nil)
 
   :config
+
+  ;; ;; Use OS notification for Pomodoro
   ;; (defun my/oascript-notification (title message)
   ;;   (shell-command (format "osascript -e 'display notification \"%s\" with title \"%s\"'" message title)))
   ;; (defun my/org-pomodoro-started-hook () (my/oascript-notification "org-pomodoro" "Pomodoro Started"))
@@ -646,12 +734,25 @@ otherwise, execute `dired-view-file'."
   ;; (defun my/org-pomodoro-break-finished-hook () (my/oascript-notification "org-pomodoro" "Break Finished"))
   ;; (defun my/org-pomodoro-killed-hook () (my/oascript-notification "org-pomodoro" "Pomodoro Killed"))
 
+  ;; Use JustFocus for Pomodoro
   (defun my/org-pomodoro-launch-app ()
-    (save-window-excursion
-      (async-shell-command "open -a /Applications/JustFocus.app/Contents/MacOS/JustFocus")))
+    (let ((async-shell-command-buffer 'rename-buffer))
+      (save-window-excursion
+        (async-shell-command "afplay -v 0.2 /System/Library/Sounds/Ping.aiff")
+        (async-shell-command "open -a /Applications/JustFocus.app/Contents/MacOS/JustFocus")
+      )))
   (defun my/org-pomodoro-kill-app ()
     (save-window-excursion
       (shell-command "killall JustFocus")))
+
+  ;; ;; Use Be Focused Pro for Pomodoro
+  ;; (defun my/org-pomodoro-launch-app ()
+  ;;   (save-window-excursion
+  ;;     (async-shell-command "open -a /Applications/Be\\ Focused\\ Pro.app/Contents/MacOS/Be\\ Focused\\ Pro")))
+  ;; (defun my/org-pomodoro-kill-app ()
+  ;;   (save-window-excursion
+  ;;     (shell-command "killall Be\\ Focused\\ Pro")))
+
   (defun my/org-pomodoro-started-hook ()
     (my/org-pomodoro-kill-app)
     (my/org-pomodoro-launch-app))
@@ -661,16 +762,33 @@ otherwise, execute `dired-view-file'."
     (let ((clock (list (car org-clock-history))))
       (if clock
           (org-with-clock-position clock
-                                   (when (string-match "^DOING" (org-get-heading))
-                                     (org-clock-in-last)
-                                     (org-agenda-redo-all))))))
+            (when (string-match "^\\(DOING\\|BREAK\\)" (org-get-heading))
+              (org-clock-in-last)
+              (org-agenda-redo-all))))))
   (defun my/org-pomodoro-killed-hook ()
     (my/org-pomodoro-kill-app))
 
   (add-hook 'org-pomodoro-started-hook 'my/org-pomodoro-started-hook)
   (add-hook 'org-pomodoro-finished-hook 'my/org-pomodoro-finished-hook)
-  (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook)
   (add-hook 'org-pomodoro-killed-hook 'my/org-pomodoro-killed-hook)
+
+  ;; (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook) ;; auto-restart
+  ;; (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-kill-app) ;; not auto-restart
+
+  (defun my/org-pomodoro (arg)
+    (interactive "p")
+    (if (> arg 1)
+        (progn
+          (let ((current-prefix-arg (/ arg 4)))
+            ;; not auto-restart
+            (remove-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook)
+            (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-kill-app)
+            (org-pomodoro (list current-prefix-arg))))
+      ;; auto-restart
+      (remove-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-kill-app)
+      (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook)
+      (org-pomodoro (list arg)))
+    (org-agenda-redo-all))
 
   (defadvice org-pomodoro-set (around org-pomodoro-set-lazy (state) activate)
     "Set the org-pomodoro STATE."
@@ -682,36 +800,13 @@ otherwise, execute `dired-view-file'."
             (:long-break (time-add (current-time) (* 60 org-pomodoro-long-break-length))))
           org-pomodoro-timer (run-with-timer t 10 'org-pomodoro-tick)))
 
-    ;; shorten Org-Agenda mode-line for narrow window
-    (defadvice org-agenda-set-mode-name (around my/org-agenda-set-mode-name activate)
-      (if (not (org-pomodoro-active-p))
-          ad-do-it
-        (setq mode-name '("Org-Agenda"))
-        (force-mode-line-update)))
+  ;; shorten Org-Agenda mode-line for narrow window
+  (defadvice org-agenda-set-mode-name (around my/org-agenda-set-mode-name activate)
+    (if (not (org-pomodoro-active-p))
+        ad-do-it
+      (setq mode-name '("Org-Agenda"))
+      (force-mode-line-update)))
 
-    ;; prevent current line disappear and keep cursor position on changing effort within column view
-    (defadvice org-agenda-set-effort (after my/org-agenda-set-effort-redo activate)
-      (if org-agenda-columns-active
-          (let ((pos (point)))
-            (org-columns-redo)
-            (goto-char pos))))
-    (defadvice org-agenda-priority-up (after my/org-agenda-priority-up-redo activate)
-      (if org-agenda-columns-active
-          (let ((pos (point)))
-            (org-columns-redo)
-            (goto-char pos))))
-    (defadvice org-agenda-priority-down (after my/org-agenda-priority-down-redo activate)
-      (if org-agenda-columns-active
-          (let ((pos (point)))
-            (org-columns-redo)
-            (goto-char pos))))
-    (defadvice org-agenda-todo (after my/org-agenda-todo-redo activate)
-      (if org-agenda-columns-active
-          (let ((pos (point)))
-            (org-columns-redo)
-            (goto-char pos)
-            (beginning-of-line))))
-    ) ;; org-agenda
   ) ;; org-pomodoro
 
 

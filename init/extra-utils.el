@@ -38,7 +38,7 @@
          ("C-x C-f" . helm-find-files)
          ("C-x C-r" . helm-recentf)
          ("C-x C-l" . helm-mini) ;; default: downcase-region
-         ("C-c C-l" . helm-mini)
+         ;;("C-c C-l" . helm-mini)
          ("C-c C-i" . helm-imenu) ;; default: ident-rigidly
          ("C-c o"   . helm-occur)
          ("C-c <SPC>" . helm-all-mark-rings)
