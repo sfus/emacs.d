@@ -24,6 +24,7 @@
  '(set-mark-command-repeat-pop t)
  '(text-quoting-style 'grave)
  '(garbage-collection-messages t)
+ '(gc-cons-threshold 1073741824)  ;; default: 268435456 (on 16GB RAM)
  '(custom-file (concat user-emacs-directory "custom.el"))
  '(line-number-display-limit 1000000)
  '(mode-line-frame-identification " ") ;; delete frame name
@@ -148,3 +149,6 @@
 
 ;; sample characters for `list-face-display'
 (setq list-faces-sample-text "漢字ひらがなカタカナabcdefghijklmnOPQRSTUVWXYZ")
+
+;; Run GC every 60 seconds if emacs is idle.
+(run-with-idle-timer 60.0 t #'garbage-collect)
