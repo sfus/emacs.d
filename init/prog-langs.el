@@ -18,6 +18,13 @@
   ) ;; vimrc-mode
 
 
+;;; yaml-mode
+(use-package yaml-mode
+  :ensure t
+  :mode ("\\.yaml\\'" "\\.yml\\'")
+  ) ;; yaml-mode
+
+
 ;;; c-mode
 (use-package c-mode
   :mode ("\\.mm\\'" . c++-mode)
