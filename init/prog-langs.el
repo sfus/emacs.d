@@ -721,75 +721,76 @@
 
 
 
-;;; web-mode
-(use-package web-mode
-  :ensure t
-  :mode "\\.html?``'"
-  :hook (web-mode-hook . my/web-mode-hook)
-  :bind (:map web-mode-map
-              ("C-c b b" . web-mode-block-beginning)
-              ("C-c b e" . web-mode-block-end)
-              ("C-c b k" . web-mode-block-kill)
-              ("C-c b n" . web-mode-block-next)
-              ("C-c b p" . web-mode-block-previous)
-              ("C-c b s" . web-mode-block-select)
-              ("C-c e b" . web-mode-element-beginning)
-              ("C-c e c" . web-mode-element-clone)
-              ("C-c e d" . web-mode-element-child)
-              ("C-c e e" . web-mode-element-end)
-              ("C-c e i" . web-mode-element-content-select)
-              ("C-c e k" . web-mode-element-kill)
-              ("C-c e n" . web-mode-element-next)
-              ("C-c e p" . web-mode-element-previous)
-              ("C-c e r" . web-mode-element-rename)
-              ("C-c e s" . web-mode-element-select)
-              ("C-c e t" . web-mode-element-traverse)
-              ("C-c e u" . web-mode-element-parent)
-              ("C-c t b" . web-mode-tag-beginning)
-              ("C-c t e" . web-mode-tag-end)
-              ("C-c t m" . web-mode-tag-match)
-              ("C-c t n" . web-mode-tag-next)
-              ("C-c t p" . web-mode-tag-previous)
-              ("C-c t s" . web-mode-tag-select))
-
-  :init
-  (setq web-mode-css-indent-offset 4)
-  (setq web-mode-markup-indent-offset 2)
-  ;; (setq web-mode-code-indent-offset 2)
-  ;; (setq web-mode-html-offset   2)
-  ;; (setq web-mode-css-offset    2)
-  ;; (setq web-mode-script-offset 4)
-  ;; (setq web-mode-php-offset    4)
-  ;; (setq web-mode-java-offset   4)
-  ;; (setq web-mode-asp-offset    4)
-  ;; (setq indent-tabs-mode nil)
-  ;; (setq tab-width 2)
-  (setq web-mode-enable-auto-quoting nil)
-  (setq web-mode-enable-whitespace-fontification t)
-  (setq web-mode-display-table
-        (let ((table (make-display-table)))
-          ;;(aset table 9  (vector ?\xB7 ?\t)) ;tab
-          (aset table 9  (vector ?\xBB ?\t)) ;tab
-          ;; (aset table 10 (vector ?\;XXX: B6 ?\n)) ;line feed
-          ;; (aset table 32 (vector ?\xB7))
-          table))
-
-  (defun my/web-mode-hook ()
-    (local-unset-key (kbd "C-c C-b"))
-    (local-unset-key (kbd "C-c C-e"))
-    (local-unset-key (kbd "C-c C-t")))
-  ) ;; web-mode
-
-
-;;; emmet
-(use-package emmet-mode
-  :ensure t
-  :defer t
-  :hook ((sgml-mode-hook . emmet-mode)
-         (html-mode-hook . emmet-mode)
-         (web-mode-hook . emmet-mode))
-  :init
-  ;; Preview is disable as default
-  (setq emmet-preview-default nil)
-  (setq emmet-indentation 2)
-  ) ;; emmet-mode
+;; ;;; web-mode
+;; (use-package web-mode
+;;   :ensure t
+;;   :mode "\\.html?``'"
+;;   :hook (web-mode-hook . my/web-mode-hook)
+;;   :bind (:map web-mode-map
+;;               ("C-c b b" . web-mode-block-beginning)
+;;               ("C-c b e" . web-mode-block-end)
+;;               ("C-c b k" . web-mode-block-kill)
+;;               ("C-c b n" . web-mode-block-next)
+;;               ("C-c b p" . web-mode-block-previous)
+;;               ("C-c b s" . web-mode-block-select)
+;;               ("C-c e b" . web-mode-element-beginning)
+;;               ("C-c e c" . web-mode-element-clone)
+;;               ("C-c e d" . web-mode-element-child)
+;;               ("C-c e e" . web-mode-element-end)
+;;               ("C-c e i" . web-mode-element-content-select)
+;;               ("C-c e k" . web-mode-element-kill)
+;;               ("C-c e n" . web-mode-element-next)
+;;               ("C-c e p" . web-mode-element-previous)
+;;               ("C-c e r" . web-mode-element-rename)
+;;               ("C-c e s" . web-mode-element-select)
+;;               ("C-c e t" . web-mode-element-traverse)
+;;               ("C-c e u" . web-mode-element-parent)
+;;               ("C-c t b" . web-mode-tag-beginning)
+;;               ("C-c t e" . web-mode-tag-end)
+;;               ("C-c t m" . web-mode-tag-match)
+;;               ("C-c t n" . web-mode-tag-next)
+;;               ("C-c t p" . web-mode-tag-previous)
+;;               ("C-c t s" . web-mode-tag-select))
+;;
+;;   :init
+;;   (setq web-mode-css-indent-offset 4)
+;;   (setq web-mode-markup-indent-offset 2)
+;;   ;; (setq web-mode-code-indent-offset 2)
+;;   ;; (setq web-mode-html-offset   2)
+;;   ;; (setq web-mode-css-offset    2)
+;;   ;; (setq web-mode-script-offset 4)
+;;   ;; (setq web-mode-php-offset    4)
+;;   ;; (setq web-mode-java-offset   4)
+;;   ;; (setq web-mode-asp-offset    4)
+;;   ;; (setq indent-tabs-mode nil)
+;;   ;; (setq tab-width 2)
+;;   (setq web-mode-enable-auto-quoting nil)
+;;   (setq web-mode-enable-whitespace-fontification t)
+;;   (setq web-mode-display-table
+;;         (let ((table (make-display-table)))
+;;           ;;(aset table 9  (vector ?\xB7 ?\t)) ;tab
+;;           (aset table 9  (vector ?\xBB ?\t)) ;tab
+;;           ;; (aset table 10 (vector ?\;XXX: B6 ?\n)) ;line feed
+;;           ;; (aset table 32 (vector ?\xB7))
+;;           table))
+;;
+;;   (defun my/web-mode-hook ()
+;;     (local-unset-key (kbd "C-c C-b"))
+;;     (local-unset-key (kbd "C-c C-e"))
+;;     (local-unset-key (kbd "C-c C-t")))
+;;   ) ;; web-mode
+;;
+;;
+;; ;;; emmet
+;; (use-package emmet-mode
+;;   :ensure t
+;;   :defer t
+;;   :hook ((sgml-mode-hook . emmet-mode)
+;;          (html-mode-hook . emmet-mode)
+;;          (web-mode-hook . emmet-mode))
+;;   :init
+;;   ;; Preview is disable as default
+;;   (setq emmet-preview-default nil)
+;;   (setq emmet-indentation 2)
+;;   ) ;; emmet-mode
+;;
