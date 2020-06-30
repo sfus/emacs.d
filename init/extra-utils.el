@@ -590,6 +590,41 @@
 
   ) ;; paredit
 
+
+;;; Evil
+;; -> https://github.com/emacs-evil/evil
+;; -> https://evil.readthedocs.io/en/latest/index.html
+;; -> https://tarao.hatenablog.com/entry/20130303/evil_intro
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-toggle-key "C-o")
+  :config
+  ;;(evil-mode 1)
+
+  ;; -> https://tarao.hatenablog.com/entry/20130304/evil_config
+  (defadvice evil-paste-pop (around evil-paste-or-move-line activate)
+    ;; evil-paste-popできなかったらprevious-lineする
+    "If there is no just-yanked stretch of killed text, just move
+to previous line."
+    (condition-case err
+        ad-do-it
+      (error (if (eq this-command 'evil-paste-pop)
+                 (call-interactively 'previous-line)
+               (signal (car err) (cdr err))))))
+  (defadvice evil-paste-pop-next (around evil-paste-or-move-line activate)
+    ;; evil-paste-pop-nextできなかったらnext-lineする
+    "If there is no just-yanked stretch of killed text, just move
+to next line."
+    (condition-case err
+        ad-do-it
+      (error (if (eq this-command 'evil-paste-pop-next)
+                 (call-interactively 'next-line)
+               (signal (car err) (cdr err))))))
+
+  ) ;; Evil
+
+
 ;; C-), C-<right>   : paredit-forward-slurp-sexp
 ;; C-}, C-<left>    : paredit-forward-barf-sexp
 ;; M-(              : paredit-wrap-round
