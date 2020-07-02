@@ -219,8 +219,7 @@
   :bind (("C-M-t" . elscreen-editutil-clone-only-this-window) ;; default: transpose-sexps
          ("M-z" . elscreen-next) ;; default: zap-to-char
          ("M-t" . elscreen-toggle) ;; default: transpose-words
-         ("M-Z" . elscreen-previous)
-         ("C-z C-l" . helm-editutil-elscreen))
+         ("M-Z" . elscreen-previous))
   :init
   (setq elscreen-prefix-key (kbd "C-z C-z"))
   ;; (setq elscreen-display-screen-number nil)
@@ -247,35 +246,6 @@
     (define-key elscreen-map (kbd "C-z") 'elscreen-toggle)
     (define-key elscreen-map (kbd ",") 'elscreen-screen-nickname)
     (define-key elscreen-map (kbd "C") 'elscreen-clone))
-
-  ;; helm-editutil-elscreen
-  ;; -> https://github.com/syohex/emacs-editutil/blob/master/helm-editutil.el
-  (defun helm-editutil--elscreen-candidates ()
-    (cl-loop with sort-func = (lambda (a b) (< (car a) (car b)))
-             with screen-list = (cl-copy-list (elscreen-get-screen-to-name-alist))
-             with remove-regexp = (format ":?%s:?" (regexp-quote "*helm-elscreen*"))
-             for (index . screen-name) in (sort screen-list sort-func)
-             collect
-             (let ((name (replace-regexp-in-string remove-regexp "" screen-name)))
-               (cons (format "[%d] %s" index name) index))))
-
-  (defun helm-editutil--elscreen-kill-screens (_candidate)
-    (dolist (screen (helm-marked-candidates))
-      (elscreen-goto screen)
-      (elscreen-kill)))
-
-  (defvar helm-editutil-source-elscreen
-    (helm-build-in-buffer-source "Elscreen"
-      :candidates #'helm-editutil--elscreen-candidates
-      :action (helm-make-actions
-               "Change screen" #'elscreen-goto
-               "Kill screen" #'helm-editutil--elscreen-kill-screens)))
-
-  (defun helm-editutil-elscreen ()
-    (interactive)
-    (require 'elscreen)
-    (helm :sources '(helm-editutil-source-elscreen) :buffer "*helm-elscreen*"))
-
 
   ;; elscreen-editutil-clone-only-this-window
   ;; -> https://github.com/syohex/emacs-editutil/blob/master/elscreen-editutil.el
