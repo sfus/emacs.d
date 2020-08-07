@@ -315,6 +315,7 @@
   :hook (js-mode-hook . my/js-mode-hook)
   :init
   (setq js-auto-indent-flag nil)
+  (setq js-indent-level 2) ;; this variable also affects js2-mode indent level
   (defun my/js-mode-hook ()
     (setq-local company-backends '(company-tern company-dabbrev)))
   ) ;; js-mode
@@ -328,13 +329,11 @@
   :mode "\\.js\\'"
   :init
   (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
+  (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . js2-jsx-mode)) ;; (version< emacs-version "27.0")
 
-  ;; js2-jsx-mode
-  ;; ;; Support for JSX is available via the derived mode `js2-jsx-mode'.  If you
-  ;; ;; also want JSX support, use that mode instead:
-  ;; (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . js2-jsx-mode))
-  ;; (add-to-list 'interpreter-mode-alist '("node" . js2-jsx-mode))
-
+  (defun my/set-jsx-indentation ()
+    (setq-local sgml-basic-offset js2-basic-offset))
+  (add-hook 'js2-jsx-mode-hook #'my/set-jsx-indentation)
   ) ;; js2-mode
 
 
