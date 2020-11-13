@@ -378,7 +378,9 @@ otherwise, execute `dired-view-file'."
          ("C-c i" . org-indent-mode)
          ("C-c I" . org-attach-screenshot)
          ("C-M-j" . my/org-insert-heading-dwim)
-         ("M-j" . org-insert-todo-heading)
+         ;;("M-j" . org-insert-todo-heading)
+         ("M-j"   . org-next-visible-heading) ;; default: C-c C-n
+         ("M-k"   . org-previous-visible-heading) ;; default: C-c C-p (kill-sentence)
          )
   :init
   (custom-set-variables
