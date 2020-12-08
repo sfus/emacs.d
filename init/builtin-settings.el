@@ -454,19 +454,19 @@ otherwise, execute `dired-view-file'."
    '(org-reverse-note-order t) ;; default: nil
    '(org-capture-templates
      `(("a" "Business #A" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#A] %? \n")
+        "** TODO [#A] %? %^G\n" :jump-to-captured t)
        ("b" "Business #B" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#B] %? \n")
+        "** TODO [#B] %? %^G\n" :jump-to-captured t)
        ("c" "Business #C" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#C] %? \n")
+        "** TODO [#C] %? %^G\n")
        ("d" "Business #D" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#D] %? \n")
+        "** TODO [#D] %? %^G\n")
        ("e" "Private #E" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-private ".org") "Private Tasks")
         "** TODO [#E] %? \n")
        ("f" "Future #F" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-private ".org") "Future Tasks")
         "** SOMEDAY [#F] %? \n")
        ("s" "Schedule" entry (file+headline org-default-notes-file "Scheduled Tasks")
-        "** TODO %? \n   SCHEDULED: %^t \n")
+        "** TODO %? %^G\n   SCHEDULED: %^t %^G\n" :jump-to-captured t)
        ("t" "TODO" entry (file+headline org-default-notes-file "Tasks")
         "** TODO %? \n")
        ("[" "Checklist" checkitem (file+headline org-default-notes-file "Todo")
@@ -566,6 +566,8 @@ otherwise, execute `dired-view-file'."
          ("S" . my/org-agenda-postpone-schedule-to-tomorrow) ;; default: org-agenda-sunrise-sunset
          ("@" . my/org-agenda-toggle-future-tasks)
          ("`" . my/org-agenda-toggle-category)
+         ("M-j" . org-agenda-priority-down) ;; default: `-'
+         ("M-k" . org-agenda-priority-up) ;; default: `+'
          ("\\" . my/org-agenda-columns-toggle) ;; org-agenda-columns: C-c C-x C-c
          ("M-\\" . my/org-agenda-toggle-org-columns-default-format)
          ("M-/" . my/org-agenda-toggle-tag-filter))
