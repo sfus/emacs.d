@@ -582,6 +582,9 @@ otherwise, execute `dired-view-file'."
   (defvar my/org-agenda-toggle-columns '(" %8EFFORT(Estimate){:}" " %8CLOCKSUM(Total){:}" "%8CLOCKSUM_T(Today){:}" " %SCHEDULED(Plan)" " %DEADLINE(Due)"))
   (defvar my/org-agenda-tag-filter-list '("@1st" "@Zone" "@Pocket" "@Break"))
   (defvar my/org-agenda-tag-filter-index -1)
+  (setq org-habit-graph-column 80)  ;; default: 40
+  (setq org-habit-preceding-days 7) ;; default: 21
+  (setq org-habit-following-days 7) ;; default: 7
 
   :config
   (require 'org-habit)
