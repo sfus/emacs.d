@@ -21,8 +21,6 @@
    '(org-startup-truncated nil)
    ;;'(org-startup-indented t) ;; default: nil
    ;;'(org-directory (expand-file-name "~/Dropbox/")) ;; default: "~/org"
-   ;;'(org-agenda-files (list "~/Tasks/"))
-   '(org-agenda-files (list my/org-agenda-root))
    ;;'(org-yank-folded-subtrees nil) ;; default: t
    '(org-return-follows-link t)
    '(org-use-fast-todo-selection t)
@@ -58,15 +56,6 @@
 
    ;;'(org-startup-folded nil) ;; default: t
    ;;'(org-yank-adjusted-subtrees t) ;; default: nil
-   ;;; -> https://orgmode.org/manual/Column-attributes.html#Column-attributes
-   '(org-columns-default-format "%60ITEM %TODO %3PRIORITY %8EFFORT(Estimate){:} %8CLOCKSUM(Total){:} %8CLOCKSUM_T(Today){:}") ;; default: "%25ITEM %TODO %3PRIORITY %TAGS"
-   ;;'(org-columns-default-format "%25ITEM %TODO %3PRIORITY %CLOCKSUM %EFFORT %SCHEDULED %DEADLINE")
-   '(org-agenda-columns-add-appointments-to-effort-sum t)
-   '(org-agenda-span 'day) ;; default: 'week (change by `d'/`w' or `v')
-   '(org-agenda-include-deadlines nil) ;; default: t (toggle by `!')
-   '(org-agenda-todo-ignore-scheduled 'future) ;; default: nil (toggle by `@' key by my function)
-   ;;'(org-agenda-start-with-log-mode t) ;; default: nil
-   ;;'(org-agenda-log-mode-items '(state)) ;; default: '(closed clock)
    '(org-clock-in-switch-to-state "DOING")
    '(org-clock-out-switch-to-state "BREAK")
    '(org-stuck-projects '("+LEVEL=2/-DONE" ("TODO" "NEXT" "DOING" "BREAK" "WAITING") nil ""))
@@ -87,26 +76,6 @@
    '(org-agenda-tags-column -120) ;; default: 'auto
    '(org-tag-alist '(("@1st" . ?1) ("@zone" . ?z) ("@break" . ?b) ("@pocket" . ?p)))
    '(org-reverse-note-order t) ;; default: nil
-   '(org-capture-templates
-     `(("a" "Business #A" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#A] %? %^G\n" :jump-to-captured t)
-       ("b" "Business #B" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#B] %? %^G\n" :jump-to-captured t)
-       ("c" "Business #C" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#C] %? %^G\n")
-       ("d" "Business #D" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#D] %? %^G\n")
-       ("e" "Private #E" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-private ".org") "Private Tasks")
-        "** TODO [#E] %? \n")
-       ("f" "Future #F" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-private ".org") "Future Tasks")
-        "** SOMEDAY [#F] %? \n")
-       ("s" "Schedule" entry (file+headline org-default-notes-file "Scheduled Tasks")
-        "** TODO %? %^G\n   SCHEDULED: %^t %^G\n" :jump-to-captured t)
-       ("t" "TODO" entry (file+headline org-default-notes-file "Tasks")
-        "** TODO %? \n")
-       ("[" "Checklist" checkitem (file+headline org-default-notes-file "Todo")
-        "- [ ] %? \n")
-       ))
    ;; https://qiita.com/takaxp/items/a5a3383d7358c58240d0
    '(org-use-speed-commands t)
    ;; http://zhongweiy.github.io/blog/2016/02/03/solve-error-emacs-not-compiled-with-dbus-support/
@@ -176,9 +145,36 @@
   ) ;; org-mode
 
 
+(use-package org-capture
+  :init
+  (custom-set-variables
+   '(org-capture-templates
+     `(("a" "Business #A" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
+        "** TODO [#A] %? %^G\n" :jump-to-captured t)
+       ("b" "Business #B" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
+        "** TODO [#B] %? %^G\n" :jump-to-captured t)
+       ("c" "Business #C" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
+        "** TODO [#C] %? %^G\n")
+       ("d" "Business #D" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
+        "** TODO [#D] %? %^G\n")
+       ("e" "Private #E" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-private ".org") "Private Tasks")
+        "** TODO [#E] %? \n")
+       ("f" "Future #F" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-private ".org") "Future Tasks")
+        "** SOMEDAY [#F] %? \n")
+       ("s" "Schedule" entry (file+headline org-default-notes-file "Scheduled Tasks")
+        "** TODO %? %^G\n   SCHEDULED: %^t %^G\n" :jump-to-captured t)
+       ("t" "TODO" entry (file+headline org-default-notes-file "Tasks")
+        "** TODO %? \n")
+       ("[" "Checklist" checkitem (file+headline org-default-notes-file "Todo")
+        "- [ ] %? \n")
+       ))
+   )
+  ) ;; org-capture
+
 ;;; org-colview
 (use-package org-colview
   :bind (:map org-columns-map
+              ("c" . org-capture)
               ("e" . org-agenda-set-effort) ;; default: org-columns-edit-value
               ("C-m" . org-columns-edit-value) ;; default: org-agenda-switch-to
               ("g" . org-agenda-columns)    ;; default: org-columns-redo
@@ -216,13 +212,28 @@
   (defvar my/org-agenda-category-list (list my/org-agenda-category-business my/org-agenda-category-private))
   (defvar my/org-agenda-category-index -1)
   (defvar my/org-agenda-series '("DOING" "BREAK" "NEXT" "TODO" "WAITING" "DONE"))
-  (defvar my/org-agenda-toggle-columns '(" %8EFFORT(Estimate){:}" " %8CLOCKSUM(Total){:}" "%8CLOCKSUM_T(Today){:}" " %SCHEDULED(Plan)" " %DEADLINE(Due)"))
+  (defvar my/org-agenda-toggle-columns '(" %8CLOCKSUM(Total){:}" "%8CLOCKSUM_T(Today){:}" " %SCHEDULED(Schedule)" " %DEADLINE(Deadline)"))
   (defvar my/org-agenda-tag-filter-list '("@1st" "@zone" "@pocket" "@break"))
   (defvar my/org-agenda-tag-filter-index -1)
-  (setq org-agenda-start-with-clockreport-mode t) ;; default: nil, toggled by `R'
-  (setq org-habit-graph-column 80)  ;; default: 40
-  (setq org-habit-preceding-days 7) ;; default: 21
-  (setq org-habit-following-days 7) ;; default: 7
+
+  (custom-set-variables
+   ;;'(org-agenda-files (list "~/Tasks/"))
+   '(org-agenda-files (list my/org-agenda-root))
+   '(org-agenda-start-with-clockreport-mode t) ;; default: nil, toggled by `R'
+   '(org-agenda-span 'day) ;; default: 'week (change by `d'/`w' or `v')
+   '(org-agenda-include-deadlines nil) ;; default: t (toggle by `!')
+   '(org-agenda-todo-ignore-scheduled 'future) ;; default: nil (toggle by `@' key by my function)
+   '(org-agenda-columns-add-appointments-to-effort-sum t)
+   ;;'(org-agenda-start-with-log-mode t) ;; default: nil
+   ;;'(org-agenda-log-mode-items '(state)) ;; default: '(closed clock)
+   ;;; -> https://orgmode.org/manual/Column-attributes.html#Column-attributes
+   ;;'(org-columns-default-format "%25ITEM %TODO %3PRIORITY %CLOCKSUM %EFFORT %SCHEDULED %DEADLINE")
+   ;;'(org-columns-default-format "%60ITEM %TODO %3PRIORITY %8EFFORT(Estimate){:} %8CLOCKSUM(Total){:} %8CLOCKSUM_T(Today){:}") ;; default: "%25ITEM %TODO %3PRIORITY %TAGS"
+   '(org-columns-default-format "%50ITEM %TODO %3PRIORITY %8EFFORT(Estimate){:} %SCHEDULED(Schedule) %DEADLINE(Deadline)") ;; default: "%25ITEM %TODO %3PRIORITY %TAGS"
+   '(org-habit-graph-column 80)  ;; default: 40
+   '(org-habit-preceding-days 7) ;; default: 21
+   '(org-habit-following-days 7) ;; default: 7
+   )
 
   :config
   ;;(require 'org-habit)
