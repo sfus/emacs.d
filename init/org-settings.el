@@ -73,7 +73,6 @@
 
    ;;'(org-log-refile t) ;; default: nil
    '(org-tags-column -120) ;; default: -77
-   '(org-agenda-tags-column -120) ;; default: 'auto
    '(org-tag-alist '(("@1st" . ?1) ("@zone" . ?z) ("@break" . ?b) ("@pocket" . ?p)))
    '(org-reverse-note-order t) ;; default: nil
    ;; https://qiita.com/takaxp/items/a5a3383d7358c58240d0
@@ -219,6 +218,7 @@
   (custom-set-variables
    ;;'(org-agenda-files (list "~/Tasks/"))
    '(org-agenda-files (list my/org-agenda-root))
+   '(org-agenda-tags-column -120) ;; default: 'auto
    '(org-agenda-start-with-clockreport-mode t) ;; default: nil, toggled by `R'
    '(org-agenda-span 'day) ;; default: 'week (change by `d'/`w' or `v')
    '(org-agenda-include-deadlines nil) ;; default: t (toggle by `!')
@@ -229,11 +229,15 @@
    ;;; -> https://orgmode.org/manual/Column-attributes.html#Column-attributes
    ;;'(org-columns-default-format "%25ITEM %TODO %3PRIORITY %CLOCKSUM %EFFORT %SCHEDULED %DEADLINE")
    ;;'(org-columns-default-format "%60ITEM %TODO %3PRIORITY %8EFFORT(Estimate){:} %8CLOCKSUM(Total){:} %8CLOCKSUM_T(Today){:}") ;; default: "%25ITEM %TODO %3PRIORITY %TAGS"
-   '(org-columns-default-format "%50ITEM %TODO %3PRIORITY %8EFFORT(Estimate){:} %SCHEDULED(Schedule) %DEADLINE(Deadline)") ;; default: "%25ITEM %TODO %3PRIORITY %TAGS"
+   '(org-columns-default-format "%TODO %50ITEM %3PRIORITY %8EFFORT(Estimate){:} %SCHEDULED(Schedule) %DEADLINE(Deadline)") ;; default: "%25ITEM %TODO %3PRIORITY %TAGS"
    '(org-habit-graph-column 80)  ;; default: 40
    '(org-habit-preceding-days 7) ;; default: 21
    '(org-habit-following-days 7) ;; default: 7
    )
+
+  (add-hook 'org-agenda-mode-hook #'(lambda ()
+                                      (setq hl-line-face 'underline)
+                                      (hl-line-mode 1)))
 
   :config
   ;;(require 'org-habit)

@@ -204,6 +204,7 @@
  '(ediff-fine-diff-C ((t (:background "yellow"))))
  '(ediff-even-diff-Ancestor ((t (:background "black"))))
 
+ '(org-column ((t (:background "grey30"))))
  '(org-pomodoro-mode-line ((t (:bold t :foreground "#FFFFFF" :background "#FC42A0")))) ;; default: (:foreground "tomato1")
  '(org-pomodoro-mode-line-break ((t (:bold t :foreground "#FFFFFF" :background "#17B005")))) ;; default: (:foreground "#2aa198")
 
