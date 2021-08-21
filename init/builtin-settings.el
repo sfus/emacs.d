@@ -431,8 +431,8 @@ otherwise, execute `dired-view-file'."
    '(org-agenda-span 'day) ;; default: 'week (change by `d'/`w' or `v')
    '(org-agenda-include-deadlines nil) ;; default: t (toggle by `!')
    '(org-agenda-todo-ignore-scheduled 'future) ;; default: nil (toggle by `@' key by my function)
-   '(org-agenda-start-with-log-mode t) ;; default: nil
-   '(org-agenda-log-mode-items '(state)) ;; default: '(closed clock)
+   ;;'(org-agenda-start-with-log-mode t) ;; default: nil
+   ;;'(org-agenda-log-mode-items '(state)) ;; default: '(closed clock)
    '(org-clock-in-switch-to-state "DOING")
    '(org-clock-out-switch-to-state "BREAK")
    '(org-stuck-projects '("+LEVEL=2/-DONE" ("TODO" "NEXT" "DOING" "BREAK" "WAITING") nil ""))
@@ -446,11 +446,12 @@ otherwise, execute `dired-view-file'."
    '(org-log-done 'time)
    '(org-log-into-drawer t) ;; https://orgmode.org/manual/Tracking-TODO-state-changes.html
    '(org-clock-into-drawer "CLOCKLOG") ;; https://orgmode.org/manual/Clocking-commands.html
+   '(org-clock-out-remove-zero-time-clocks t)
 
    ;;'(org-log-refile t) ;; default: nil
    '(org-tags-column -120) ;; default: -77
    '(org-agenda-tags-column -120) ;; default: 'auto
-   '(org-tag-alist '(("@1st" . ?1) ("@Zone" . ?z) ("@Break" . ?b) ("@Pocket" . ?p)))
+   '(org-tag-alist '(("@1st" . ?1) ("@zone" . ?z) ("@break" . ?b) ("@pocket" . ?p)))
    '(org-reverse-note-order t) ;; default: nil
    '(org-capture-templates
      `(("a" "Business #A" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
@@ -545,7 +546,7 @@ otherwise, execute `dired-view-file'."
 (use-package org-colview
   :bind (:map org-columns-map
               ("e" . org-agenda-set-effort) ;; default: org-columns-edit-value
-              ("r" . org-columns-edit-value) ;; default: org-columns-redo (equals `g')
+              ("C-m" . org-columns-edit-value) ;; default: org-agenda-switch-to
               ("g" . org-agenda-columns)    ;; default: org-columns-redo
               )
   ) ;; org-colview
@@ -563,7 +564,9 @@ otherwise, execute `dired-view-file'."
          ("l" . my/org-agenda-todo-state-change-right) ;; default: org-agenda-log-mode
          ("L" . org-agenda-log-mode) ;; default: org-agenda-recenter
          ("c" . org-agenda-capture) ;; default: org-agenda-goto-calendar
-         ("S" . my/org-agenda-postpone-schedule-to-tomorrow) ;; default: org-agenda-sunrise-sunset
+         ("S" . org-agenda-schedule) ;; default: org-agenda-sunrise-sunset
+         ("D" . org-agenda-deadline) ;; default: org-agenda-toggle-diary
+         ("P" . my/org-agenda-postpone-schedule-to-tomorrow) ;; default: org-agenda-next-item
          ("@" . my/org-agenda-toggle-future-tasks)
          ("`" . my/org-agenda-toggle-category)
          ("M-j" . org-agenda-priority-down) ;; default: `-'
@@ -580,14 +583,15 @@ otherwise, execute `dired-view-file'."
   (defvar my/org-agenda-category-index -1)
   (defvar my/org-agenda-series '("DOING" "BREAK" "NEXT" "TODO" "WAITING" "DONE"))
   (defvar my/org-agenda-toggle-columns '(" %8EFFORT(Estimate){:}" " %8CLOCKSUM(Total){:}" "%8CLOCKSUM_T(Today){:}" " %SCHEDULED(Plan)" " %DEADLINE(Due)"))
-  (defvar my/org-agenda-tag-filter-list '("@1st" "@Zone" "@Pocket" "@Break"))
+  (defvar my/org-agenda-tag-filter-list '("@1st" "@zone" "@pocket" "@break"))
   (defvar my/org-agenda-tag-filter-index -1)
+  (setq org-agenda-start-with-clockreport-mode t) ;; default: nil, toggled by `R'
   (setq org-habit-graph-column 80)  ;; default: 40
   (setq org-habit-preceding-days 7) ;; default: 21
   (setq org-habit-following-days 7) ;; default: 7
 
   :config
-  (require 'org-habit)
+  ;;(require 'org-habit)
   ;;(add-to-list 'org-speed-commands-user '("i" my/org-pomodoro)) ;; default: (progn (forward-char 1) (call-interactively 'org-insert-heading-respect-content))
 
   ;; with-eval-after-load 'org-agenda
@@ -787,13 +791,13 @@ otherwise, execute `dired-view-file'."
     (if (> arg 1)
         (progn
           (let ((current-prefix-arg (/ arg 4)))
-            ;; not auto-restart
-            (remove-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook)
-            (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-kill-app)
+            ;; auto-restart
+            (remove-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-kill-app)
+            (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook)
             (org-pomodoro (list current-prefix-arg))))
-      ;; auto-restart
-      (remove-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-kill-app)
-      (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook)
+      ;; not auto-restart
+      (remove-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook)
+      (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-kill-app)
       (org-pomodoro (list arg)))
     (org-agenda-redo-all))
 
