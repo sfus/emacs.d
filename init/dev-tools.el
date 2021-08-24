@@ -159,6 +159,23 @@
 ;; $ go build -gcflags "-N -l" foo.go
 
 
+;;; git-commit (included by magit)
+(use-package git-commit
+  :ensure t
+  :init
+  (global-git-commit-mode t)
+  (defun my/git-commit-commit-after (_unused)
+    (delete-window))
+  (defun my/git-commit-mode-hook ()
+    (setq-local company-backends '(company-ispell company-files company-dabbrev))
+    (flyspell-mode +1)
+    )
+
+  (add-hook 'git-commit-mode-hook 'my/git-commit-mode-hook)
+  (advice-add 'git-commit-commit :after 'my/git-commit-commit-after)
+  ) ;; git-commit
+
+
 ;;; magit
 (use-package magit
   :ensure t
@@ -173,8 +190,6 @@
 
   ;; -> https://magit.vc/manual/magit/Automatic-Reverting-of-File_002dVisiting-Buffers.html
   ;; (setq magit-auto-revert-mode nil)     ;; default: t
-
-  (global-git-commit-mode t)
 
   :config
   ;; (advice-add 'magit-status :around 'my/magit-status-around)
@@ -194,22 +209,6 @@
     (kill-buffer)
     (jump-to-register :magit-fullscreen)
     (git-gutter:update-all-windows))
-
-  ;;; git-commit (included by magit)
-  (use-package git-commit
-    :defer t
-    :ensure t
-    :init
-    (defun my/git-commit-commit-after (_unused)
-      (delete-window))
-    (defun my/git-commit-mode-hook ()
-      ;;(setq-local company-backends '(company-ispell company-files company-dabbrev))
-      (flyspell-mode +1)
-      )
-
-    (add-hook 'git-commit-mode-hook 'my/git-commit-mode-hook)
-    (advice-add 'git-commit-commit :after 'my/git-commit-commit-after)
-    ) ;; git-commit
 
   ) ;; magit
 
