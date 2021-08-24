@@ -144,32 +144,6 @@
   ) ;; org-mode
 
 
-(use-package org-capture
-  :init
-  (custom-set-variables
-   '(org-capture-templates
-     `(("a" "Business #A" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#A] %? %^G\n" :jump-to-captured t)
-       ("b" "Business #B" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#B] %? %^G\n" :jump-to-captured t)
-       ("c" "Business #C" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#C] %? %^G\n")
-       ("d" "Business #D" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#D] %? %^G\n")
-       ("e" "Private #E" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-private ".org") "Private Tasks")
-        "** TODO [#E] %? \n")
-       ("f" "Future #F" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-private ".org") "Future Tasks")
-        "** SOMEDAY [#F] %? \n")
-       ("s" "Schedule" entry (file+headline org-default-notes-file "Scheduled Tasks")
-        "** TODO %? %^G\n   SCHEDULED: %^t %^G\n" :jump-to-captured t)
-       ("t" "TODO" entry (file+headline org-default-notes-file "Tasks")
-        "** TODO %? \n")
-       ("[" "Checklist" checkitem (file+headline org-default-notes-file "Todo")
-        "- [ ] %? \n")
-       ))
-   )
-  ) ;; org-capture
-
 ;;; org-colview
 (use-package org-colview
   :bind (:map org-columns-map
@@ -177,6 +151,8 @@
               ("e" . org-agenda-set-effort) ;; default: org-columns-edit-value
               ("C-m" . org-columns-edit-value) ;; default: org-agenda-switch-to
               ("g" . org-agenda-columns)    ;; default: org-columns-redo
+              ("l" . forward-char)
+              ("h" . backward-char)
               )
   ) ;; org-colview
 
@@ -220,12 +196,17 @@
    '(org-agenda-files (list my/org-agenda-root))
    '(org-agenda-tags-column -120) ;; default: 'auto
    '(org-agenda-start-with-clockreport-mode t) ;; default: nil, toggled by `R'
+   '(org-agenda-clockreport-parameter-plist '(:link t :maxlevel 2 :fileskip0 t :narrow 80 :formula %)) ;; default: :link t :maxlevel 2
+   ;; org-clocktable-defaults
+   ;; (:maxlevel 2 :lang "en" :scope file :block nil :wstart 1 :mstart 1 :tstart nil :tend nil :step nil
+   ;;  :stepskip0 nil :fileskip0 nil :tags nil :emphasize nil :link nil :narrow 40! :indent t :formula nil
+   ;;  :timestamp nil :level nil :tcolumns nil :formatter nil)
    '(org-agenda-span 'day) ;; default: 'week (change by `d'/`w' or `v')
    '(org-agenda-include-deadlines nil) ;; default: t (toggle by `!')
    '(org-agenda-todo-ignore-scheduled 'future) ;; default: nil (toggle by `@' key by my function)
    '(org-agenda-columns-add-appointments-to-effort-sum t)
    ;;'(org-agenda-start-with-log-mode t) ;; default: nil
-   ;;'(org-agenda-log-mode-items '(state)) ;; default: '(closed clock)
+   '(org-agenda-log-mode-items '(state)) ;; default: '(closed clock)
    ;;; -> https://orgmode.org/manual/Column-attributes.html#Column-attributes
    ;;'(org-columns-default-format "%25ITEM %TODO %3PRIORITY %CLOCKSUM %EFFORT %SCHEDULED %DEADLINE")
    ;;'(org-columns-default-format "%60ITEM %TODO %3PRIORITY %8EFFORT(Estimate){:} %8CLOCKSUM(Total){:} %8CLOCKSUM_T(Today){:}") ;; default: "%25ITEM %TODO %3PRIORITY %TAGS"
@@ -233,6 +214,7 @@
    '(org-habit-graph-column 80)  ;; default: 40
    '(org-habit-preceding-days 7) ;; default: 21
    '(org-habit-following-days 7) ;; default: 7
+   '(org-agenda-time-leading-zero t) ;; default: nil
    )
 
   (add-hook 'org-agenda-mode-hook #'(lambda ()
@@ -373,7 +355,36 @@
              (my/org-agenda-change-category my/org-agenda-category-index)))))
   ) ;; org-agenda
 
-  ;;; org-pomodoro
+
+;;; org-capture
+(use-package org-capture
+  :init
+  (custom-set-variables
+   '(org-capture-templates
+     `(("a" "Business #A" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
+        "** TODO [#A] %? %^G\n" :jump-to-captured t)
+       ("b" "Business #B" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
+        "** TODO [#B] %? %^G\n" :jump-to-captured t)
+       ("c" "Business #C" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
+        "** TODO [#C] %? %^G\n")
+       ("d" "Business #D" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
+        "** TODO [#D] %? %^G\n")
+       ("e" "Private #E" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-private ".org") "Private Tasks")
+        "** TODO [#E] %? \n")
+       ("f" "Future #F" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-private ".org") "Future Tasks")
+        "** SOMEDAY [#F] %? \n")
+       ("s" "Schedule" entry (file+headline org-default-notes-file "Scheduled Tasks")
+        "** TODO %? %^G\n   SCHEDULED: %^t %^G\n" :jump-to-captured t)
+       ("t" "TODO" entry (file+headline org-default-notes-file "Tasks")
+        "** TODO %? \n")
+       ("[" "Checklist" checkitem (file+headline org-default-notes-file "Todo")
+        "- [ ] %? \n")
+       ))
+   )
+  ) ;; org-capture
+
+
+;;; org-pomodoro
 (use-package org-pomodoro
   :after org-agenda
   :ensure t
