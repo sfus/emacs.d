@@ -52,10 +52,18 @@
        ("CANCELED" . "SteelBlue")
        ("BREAK" . "grey")
        ))
+   '(org-priority-faces '((?A . org-warning)
+                          (?B . org-todo)
+                          (?C . org-priority)
+                          (?D . org-default)
+                          (?E . org-agenda-dimmed-todo-face)
+                          (?F . org-hide)
+                          ;; (?C . (:foreground "yellow" :weight 'bold))
+                          ))
    '(org-global-properties '(("Effort_ALL" . "0:30 1:00 1:30 2:00 2:30 3:00 3:30 4:00 4:30 0:10")))
 
    ;;'(org-startup-folded nil) ;; default: t
-   ;;'(org-yank-adjusted-subtrees t) ;; default: nil
+   '(org-yank-adjusted-subtrees t) ;; default: nil
    '(org-clock-in-switch-to-state "DOING")
    '(org-clock-out-switch-to-state "BREAK")
    '(org-stuck-projects '("+LEVEL=2/-DONE" ("TODO" "NEXT" "DOING" "BREAK" "WAITING") nil ""))
@@ -196,7 +204,7 @@
    '(org-agenda-files (list my/org-agenda-root))
    '(org-agenda-tags-column -120) ;; default: 'auto
    '(org-agenda-start-with-clockreport-mode t) ;; default: nil, toggled by `R'
-   '(org-agenda-clockreport-parameter-plist '(:link t :maxlevel 2 :fileskip0 t :narrow 80 :formula %)) ;; default: :link t :maxlevel 2
+   '(org-agenda-clockreport-parameter-plist '(:link t :maxlevel 2 :fileskip0 t :narrow 60 :formula %)) ;; default: :link t :maxlevel 2
    ;; org-clocktable-defaults
    ;; (:maxlevel 2 :lang "en" :scope file :block nil :wstart 1 :mstart 1 :tstart nil :tend nil :step nil
    ;;  :stepskip0 nil :fileskip0 nil :tags nil :emphasize nil :link nil :narrow 40! :indent t :formula nil
