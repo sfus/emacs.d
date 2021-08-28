@@ -361,6 +361,14 @@
                (if narrow-window
                    (delete-other-windows)))
              (my/org-agenda-change-category my/org-agenda-category-index)))))
+
+  ;; shorten Org-Agenda mode-line for narrow window
+  (defadvice org-agenda-set-mode-name (around my/org-agenda-set-mode-name activate)
+    (if (not (org-pomodoro-active-p))
+        ad-do-it
+      (setq mode-name '("Org-Agenda"))
+      (force-mode-line-update)))
+
   ) ;; org-agenda
 
 
@@ -417,11 +425,12 @@
   (defun my/org-pomodoro-launch-app ()
     (let ((async-shell-command-buffer 'rename-buffer))
       (save-window-excursion
-        (async-shell-command "afplay -v 0.2 /System/Library/Sounds/Ping.aiff")
+        ;;(async-shell-command "afplay -v 0.2 /System/Library/Sounds/Ping.aiff")
         (async-shell-command "open -a /Applications/JustFocus.app/Contents/MacOS/JustFocus")
       )))
   (defun my/org-pomodoro-kill-app ()
     (save-window-excursion
+      (async-shell-command "afplay -v 0.2 /System/Library/Sounds/Purr.aiff")
       (shell-command "killall JustFocus")))
 
   ;; ;; Use Be Focused Pro for Pomodoro
@@ -478,13 +487,6 @@
             (:short-break (time-add (current-time) (* 60 org-pomodoro-short-break-length)))
             (:long-break (time-add (current-time) (* 60 org-pomodoro-long-break-length))))
           org-pomodoro-timer (run-with-timer t 10 'org-pomodoro-tick)))
-
-  ;; shorten Org-Agenda mode-line for narrow window
-  (defadvice org-agenda-set-mode-name (around my/org-agenda-set-mode-name activate)
-    (if (not (org-pomodoro-active-p))
-        ad-do-it
-      (setq mode-name '("Org-Agenda"))
-      (force-mode-line-update)))
 
   ) ;; org-pomodoro
 
