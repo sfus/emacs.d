@@ -5,16 +5,23 @@
          :map org-mode-map
          ("M-," . org-mark-ring-goto)
          ("C-c t" . org-toggle-link-display)
-         ("C-M-<return>" . org-insert-todo-heading)
+         ("C-c s" . org-sort) ;; default: C-c ^
+         ;;("C-M-<return>" . org-insert-todo-heading)
          ("C-c <tab>" . outline-show-all)
+         ;;("C-<return>" . org-insert-subheading) ;; default: org-insert-heading-respect-content
          ("C-m" . org-return-indent) ;; default: C-j
          ("C-j" . org-return) ;; default: C-m
          ("C-c i" . org-indent-mode)
          ("C-c I" . org-attach-screenshot)
          ("C-M-j" . my/org-insert-heading-dwim)
          ;;("M-j" . org-insert-todo-heading)
-         ("M-j"   . org-next-visible-heading) ;; default: C-c C-n
-         ("M-k"   . org-previous-visible-heading) ;; default: C-c C-p (kill-sentence)
+         ("M-j" . org-next-visible-heading) ;; default: C-c C-n
+         ("M-k" . org-previous-visible-heading) ;; default: C-c C-p (kill-sentence)
+         ("M-p" . org-metaup) ;; default: M-<up>
+         ("M-n" . org-metadown) ;; default: M-<down>
+         ("C-M-f" . org-metaright) ;; default: M-<right>
+         ("C-M-b" . org-metaleft) ;; default: M-<right>
+         ("C-c C-x M-i" . my/org-pomodoro)
          )
   :init
   (custom-set-variables
@@ -63,7 +70,7 @@
    '(org-global-properties '(("Effort_ALL" . "0:30 1:00 1:30 2:00 2:30 3:00 3:30 4:00 4:30 0:10")))
 
    ;;'(org-startup-folded nil) ;; default: t
-   '(org-yank-adjusted-subtrees t) ;; default: nil
+   ;;'(org-yank-adjusted-subtrees t) ;; default: nil
    '(org-clock-in-switch-to-state "DOING")
    '(org-clock-out-switch-to-state "BREAK")
    '(org-stuck-projects '("+LEVEL=2/-DONE" ("TODO" "NEXT" "DOING" "BREAK" "WAITING") nil ""))
@@ -114,10 +121,10 @@
                              ;;("C-j" . 'org-metadown)
                              ;;("C-k" . 'org-metaup)
                              ;;("C-l" . 'org-metaright)
-                             ("H" . 'org-shiftleft)
-                             ("J" . 'org-shiftdown)
-                             ("K" . 'org-shiftup)
-                             ("L" . 'org-shiftright)
+                             ;;("H" . 'org-shiftleft)
+                             ;;("J" . 'org-shiftdown)
+                             ;;("K" . 'org-shiftup)
+                             ;;("L" . 'org-shiftright)
                              )))
 
   ;; https://qiita.com/takaxp/items/a5a3383d7358c58240d0
@@ -125,15 +132,75 @@
                   ("j" org-speed-move-safe 'org-next-visible-heading) ;; default: org-goto
                   ("k" org-speed-move-safe 'org-previous-visible-heading)
                   ("l" org-speed-move-safe 'org-show-subtree)   ;; default: org-shiftleft
-                  ("H" org-speed-move-safe 'org-shiftmetaleft)
-                  ("J" org-speed-move-safe 'org-metadown)
-                  ("K" org-speed-move-safe 'org-metaup)
-                  ("L" org-speed-move-safe 'org-shiftmetaright) ;; default: org-shiftmetaleft
+                  ;;("H" org-speed-move-safe 'org-shiftmetaleft)
+                  ;;("J" org-speed-move-safe 'org-metadown)
+                  ;;("K" org-speed-move-safe 'org-metaup)
+                  ;;("L" org-speed-move-safe 'org-shiftmetaright) ;; default: org-shiftmetaleft
                   ("q" widen)                                   ;; default: C-x n w
                   ("A" org-force-cycle-archived)                ;; default: C-Tab
                   ("$" org-archive-subtree-default-with-confirmation) ;; default: C-c C-x C-a
                   ))
     (add-to-list 'org-speed-commands-user item))
+
+  ;; org-speed-commands-user
+  ;; (("Outline Navigation")
+  ;;  ("n" org-speed-move-safe 'org-next-visible-heading)
+  ;;  ("p" org-speed-move-safe 'org-previous-visible-heading)
+  ;;  ("f" org-speed-move-safe 'org-forward-heading-same-level)
+  ;;  ("b" org-speed-move-safe 'org-backward-heading-same-level)
+  ;;  ("F" . org-next-block)
+  ;;  ("B" . org-previous-block)
+  ;;  ("u" org-speed-move-safe 'outline-up-heading)
+  ;;  ("j" . org-goto)
+  ;;  ("g" org-refile t)
+  ;;  ("Outline Visibility")
+  ;;  ("c" . org-cycle)
+  ;;  ("C" . org-shifttab)
+  ;;  (" " . org-display-outline-path)
+  ;;  ("s" . org-narrow-to-subtree)
+  ;;  ("=" . org-columns)
+  ;;  ("Outline Structure Editing")
+  ;;  ("U" . org-metaup)
+  ;;  ("D" . org-metadown)
+  ;;  ("r" . org-metaright)
+  ;;  ("l" . org-metaleft)
+  ;;  ("R" . org-shiftmetaright)
+  ;;  ("L" . org-shiftmetaleft)
+  ;;  ("i" progn
+  ;;   (forward-char 1)
+  ;;   (call-interactively 'org-insert-heading-respect-content))
+  ;;  ("^" . org-sort)
+  ;;  ("w" . org-refile)
+  ;;  ("a" . org-archive-subtree-default-with-confirmation)
+  ;;  ("@" . org-mark-subtree)
+  ;;  ("#" . org-toggle-comment)
+  ;;  ("Clock Commands")
+  ;;  ("I" . org-clock-in)
+  ;;  ("O" . org-clock-out)
+  ;;  ("Meta Data Editing")
+  ;;  ("t" . org-todo)
+  ;;  ("," org-priority)
+  ;;  ("0" org-priority 32)
+  ;;  ("1" org-priority 65)
+  ;;  ("2" org-priority 66)
+  ;;  ("3" org-priority 67)
+  ;;  (":" . org-set-tags-command)
+  ;;  ("e" . org-set-effort)
+  ;;  ("E" . org-inc-effort)
+  ;;  ("W" lambda
+  ;;   (m)
+  ;;   (interactive "sMinutes before warning: ")
+  ;;   (org-entry-put
+  ;;    (point)
+  ;;    "APPT_WARNTIME" m))
+  ;;  ("Agenda Views etc")
+  ;;  ("v" . org-agenda)
+  ;;  ("/" . org-sparse-tree)
+  ;;  ("Misc")
+  ;;  ("o" . org-open-at-point)
+  ;;  ("?" . org-speed-command-help)
+  ;;  ("<" org-agenda-set-restriction-lock 'subtree)
+  ;;  (">" org-agenda-remove-restriction-lock))
 
   ;; Emacs tech bible ch.14.2 by rubikitch
   (defun my/org-insert-upheading (org)
@@ -149,6 +216,36 @@
       (16 (my/org-insert-upheading  nil))  ; C-u C-u
       ;;(t  (org-insert-heading    nil))
       (t  (org-insert-heading-respect-content    nil))))
+
+
+  ;; set schedule time
+  (defun my/org-agenda-set-schedule-time (time)
+    (org-agenda-schedule nil time))
+  (defun my/org-agenda-set-schedule-time-09 () (interactive) (my/org-agenda-set-schedule-time "09:30"))
+  (defun my/org-agenda-set-schedule-time-10 () (interactive) (my/org-agenda-set-schedule-time "10:00"))
+  (defun my/org-agenda-set-schedule-time-11 () (interactive) (my/org-agenda-set-schedule-time "11:00"))
+  (defun my/org-agenda-set-schedule-time-12 () (interactive) (my/org-agenda-set-schedule-time "12:00"))
+  (defun my/org-agenda-set-schedule-time-13 () (interactive) (my/org-agenda-set-schedule-time "13:00"))
+  (defun my/org-agenda-set-schedule-time-14 () (interactive) (my/org-agenda-set-schedule-time "14:00"))
+  (defun my/org-agenda-set-schedule-time-15 () (interactive) (my/org-agenda-set-schedule-time "15:00"))
+  (defun my/org-agenda-set-schedule-time-16 () (interactive) (my/org-agenda-set-schedule-time "16:00"))
+  (defun my/org-agenda-set-schedule-time-17 () (interactive) (my/org-agenda-set-schedule-time "17:00"))
+  (defun my/org-agenda-set-schedule-time-18 () (interactive) (my/org-agenda-set-schedule-time "18:00"))
+
+  ;; https://qiita.com/takaxp/items/a5a3383d7358c58240d0
+  (dolist (item '(("9" my/org-agenda-set-schedule-time-09)
+                  ("0" my/org-agenda-set-schedule-time-10)
+                  ("1" my/org-agenda-set-schedule-time-11)
+                  ("2" my/org-agenda-set-schedule-time-12)
+                  ("3" my/org-agenda-set-schedule-time-13)
+                  ("4" my/org-agenda-set-schedule-time-14)
+                  ("5" my/org-agenda-set-schedule-time-15)
+                  ("6" my/org-agenda-set-schedule-time-16)
+                  ("7" my/org-agenda-set-schedule-time-17)
+                  ("8" my/org-agenda-set-schedule-time-18)
+                  ))
+    (add-to-list 'org-speed-commands-user item))
+
   ) ;; org-mode
 
 
@@ -161,6 +258,16 @@
               ("g" . org-agenda-columns)    ;; default: org-columns-redo
               ("l" . forward-char)
               ("h" . backward-char)
+              ("9" . my/org-agenda-set-schedule-time-09)
+              ("0" . my/org-agenda-set-schedule-time-10)
+              ("1" . my/org-agenda-set-schedule-time-11)
+              ("2" . my/org-agenda-set-schedule-time-12)
+              ("3" . my/org-agenda-set-schedule-time-13)
+              ("4" . my/org-agenda-set-schedule-time-14)
+              ("5" . my/org-agenda-set-schedule-time-15)
+              ("6" . my/org-agenda-set-schedule-time-16)
+              ("7" . my/org-agenda-set-schedule-time-17)
+              ("8" . my/org-agenda-set-schedule-time-18)
               )
   ) ;; org-colview
 
@@ -186,7 +293,18 @@
          ("M-k" . org-agenda-priority-up) ;; default: `+'
          ("\\" . my/org-agenda-columns-toggle) ;; org-agenda-columns: C-c C-x C-c
          ("M-\\" . my/org-agenda-toggle-org-columns-default-format)
-         ("M-/" . my/org-agenda-toggle-tag-filter))
+         ("M-/" . my/org-agenda-toggle-tag-filter)
+         ("9" . my/org-agenda-set-schedule-time-09)
+         ("0" . my/org-agenda-set-schedule-time-10)
+         ("1" . my/org-agenda-set-schedule-time-11)
+         ("2" . my/org-agenda-set-schedule-time-12)
+         ("3" . my/org-agenda-set-schedule-time-13)
+         ("4" . my/org-agenda-set-schedule-time-14)
+         ("5" . my/org-agenda-set-schedule-time-15)
+         ("6" . my/org-agenda-set-schedule-time-16)
+         ("7" . my/org-agenda-set-schedule-time-17)
+         ("8" . my/org-agenda-set-schedule-time-18)
+         )
 
   :init
   (defvar my/org-agenda-root "~/Dropbox/org/agenda/")
@@ -235,7 +353,7 @@
 
   ;; with-eval-after-load 'org-agenda
   (with-eval-after-load 'org-agenda
-    (define-key org-agenda-mode-map (kbd "i") 'my/org-pomodoro) ;; default: org-agenda-diary-entry
+    (define-key org-agenda-mode-map (kbd "M-i") 'my/org-pomodoro)
 
     ;; prevent current line disappear and keep cursor position on changing effort within column view
     (defadvice org-agenda-set-effort (after my/org-agenda-set-effort-redo activate)
