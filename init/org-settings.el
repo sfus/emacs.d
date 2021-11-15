@@ -328,7 +328,7 @@
    ;;  :stepskip0 nil :fileskip0 nil :tags nil :emphasize nil :link nil :narrow 40! :indent t :formula nil
    ;;  :timestamp nil :level nil :tcolumns nil :formatter nil)
    '(org-agenda-span 'day) ;; default: 'week (change by `d'/`w' or `v')
-   '(org-agenda-include-deadlines nil) ;; default: t (toggle by `!')
+   ;; '(org-agenda-include-deadlines nil) ;; default: t (toggle by `!')
    '(org-agenda-todo-ignore-scheduled 'future) ;; default: nil (toggle by `@' key by my function)
    '(org-agenda-columns-add-appointments-to-effort-sum t)
    ;;'(org-agenda-start-with-log-mode t) ;; default: nil
@@ -354,6 +354,7 @@
   ;; with-eval-after-load 'org-agenda
   (with-eval-after-load 'org-agenda
     (define-key org-agenda-mode-map (kbd "M-i") 'my/org-pomodoro)
+    (define-key org-mode-map (kbd "M-i") 'my/org-pomodoro)
 
     ;; prevent current line disappear and keep cursor position on changing effort within column view
     (defadvice org-agenda-set-effort (after my/org-agenda-set-effort-redo activate)
@@ -496,21 +497,21 @@
   (custom-set-variables
    '(org-capture-templates
      `(("a" "Business #A" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#A] %? %^G\n" :jump-to-captured t)
+        "** TODO [#A] %? :@zone:\n   SCHEDULED: <%<%Y-%m-%d %a>> DEADLINE: %^t\n" :jump-to-captured t)
        ("b" "Business #B" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#B] %? %^G\n" :jump-to-captured t)
+        "** TODO [#B] %? :@zone:\n   SCHEDULED: <%<%Y-%m-%d %a>>\n")
        ("c" "Business #C" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#C] %? %^G\n")
+        "** TODO [#C] %? :@pocket:\n   SCHEDULED: <%<%Y-%m-%d %a>>\n")
        ("d" "Business #D" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-business ".org") "Inbox")
-        "** TODO [#D] %? %^G\n")
+        "** TODO [#D] %? :@break:\n")
        ("e" "Private #E" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-private ".org") "Private Tasks")
-        "** TODO [#E] %? \n")
+        "** TODO [#E] %? :@break:\n")
        ("f" "Future #F" entry (file+headline ,(concat my/org-agenda-root my/org-agenda-category-private ".org") "Future Tasks")
-        "** SOMEDAY [#F] %? \n")
+        "** SOMEDAY [#F] %?\n")
        ("s" "Schedule" entry (file+headline org-default-notes-file "Scheduled Tasks")
-        "** TODO %? %^G\n   SCHEDULED: %^t %^G\n" :jump-to-captured t)
+        "** TODO %?\n   SCHEDULED: %^t\n" :jump-to-captured t)
        ("t" "TODO" entry (file+headline org-default-notes-file "Tasks")
-        "** TODO %? \n")
+        "** TODO %?\n")
        ("[" "Checklist" checkitem (file+headline org-default-notes-file "Todo")
         "- [ ] %? \n")
        ))
