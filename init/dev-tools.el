@@ -163,7 +163,6 @@
 (use-package git-commit
   :ensure t
   :init
-  (global-git-commit-mode t)
   (defun my/git-commit-commit-after (_unused)
     (delete-window))
   (defun my/git-commit-mode-hook ()
@@ -173,6 +172,9 @@
 
   (add-hook 'git-commit-mode-hook 'my/git-commit-mode-hook)
   (advice-add 'git-commit-commit :after 'my/git-commit-commit-after)
+
+  :config
+  (global-git-commit-mode t)
   ) ;; git-commit
 
 
