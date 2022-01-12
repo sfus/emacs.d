@@ -128,6 +128,11 @@
                              )))
 
   ;; https://qiita.com/takaxp/items/a5a3383d7358c58240d0
+  (defun my/org-todo-cancel-repeat (&optional ARG)
+    (when (org-get-repeat)
+      (org-cancel-repeater))
+    (org-todo ARG))
+
   (dolist (item '(("h" org-speed-move-safe 'org-cycle)
                   ("j" org-speed-move-safe 'org-next-visible-heading) ;; default: org-goto
                   ("k" org-speed-move-safe 'org-previous-visible-heading)
@@ -139,9 +144,11 @@
                   ("q" widen)                                   ;; default: C-x n w
                   ("A" org-force-cycle-archived)                ;; default: C-Tab
                   ("$" org-archive-subtree-default-with-confirmation) ;; default: C-c C-x C-a
+                  ("D" my/org-todo-cancel-repeat "DONE")
                   ))
     (add-to-list 'org-speed-commands-user item))
 
+  ;; ;; type `?' to show speed commands.
   ;; org-speed-commands-user
   ;; (("Outline Navigation")
   ;;  ("n" org-speed-move-safe 'org-next-visible-heading)
@@ -379,6 +386,11 @@
             (goto-char pos)
             (beginning-of-line))))
 
+    ;; https://emacs.stackexchange.com/questions/17797/how-to-narrow-to-subtree-in-org-agenda-follow-mode
+    (advice-add 'org-agenda-goto :after
+                (lambda (&rest args)
+                  (org-narrow-to-subtree)))
+
     ) ;; with-eval-after-load 'org-agenda
 
   (defun my/org-agenda-todo-state-change-right ()
@@ -584,17 +596,24 @@
 
   (defun my/org-pomodoro (arg)
     (interactive "p")
-    (if (> arg 1)
-        (progn
-          (let ((current-prefix-arg (/ arg 4)))
-            ;; auto-restart
-            (remove-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-kill-app)
-            (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook)
-            (org-pomodoro (list current-prefix-arg))))
-      ;; not auto-restart
-      (remove-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook)
-      (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-kill-app)
-      (org-pomodoro (list arg)))
+    (cond
+     ((eq arg 1)
+      (my/org-pomodoro-repeat))
+     ((eq arg 4)
+      (my/org-pomodoro-no-repeat))
+     (t
+      (org-pomodoro (list arg)))))
+
+  (defun my/org-pomodoro-repeat ()
+    (remove-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-kill-app)
+    (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook)
+    (org-pomodoro)
+    (org-agenda-redo-all))
+
+  (defun my/org-pomodoro-no-repeat ()
+    (remove-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook)
+    (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-kill-app)
+    (org-pomodoro)
     (org-agenda-redo-all))
 
   (defadvice org-pomodoro-set (around org-pomodoro-set-lazy (state) activate)
