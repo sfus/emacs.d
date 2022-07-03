@@ -24,6 +24,10 @@
          ("C-c C-x M-i" . my/org-pomodoro)
          )
   :init
+  ;; migration for org 9.5 or later
+  (unless (boundp 'org-speed-commands-user)
+    (defvaralias 'org-speed-commands-user 'org-speed-commands))
+
   (custom-set-variables
    '(org-startup-truncated nil)
    ;;'(org-startup-indented t) ;; default: nil
