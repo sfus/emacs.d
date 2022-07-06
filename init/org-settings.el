@@ -27,6 +27,7 @@
   ;; migration for org 9.5 or later
   (unless (boundp 'org-speed-commands-user)
     (defvaralias 'org-speed-commands-user 'org-speed-commands))
+  (defvar my/org-agenda-root "~/Dropbox/org/agenda/")
 
   (custom-set-variables
    '(org-startup-truncated nil)
@@ -55,10 +56,10 @@
        ;; ("CANCEL" . "SteelBlue")
        ;; ("NO_ACTION" . "brown1")
        ("TODO" . org-todo)
-       ("NEXT" . "red")
+       ("NEXT" . "hotpink")
        ("DOING" . (:foreground "orange" :underline t :weight bold))
-       ("DONE" . "green")
-       ("WAITING" . "firebrick1")
+       ("DONE" . "palegreen")
+       ("WAITING" . "lightcoral")
        ("SOMEDAY" . "brown1")
        ("CANCELED" . "SteelBlue")
        ("BREAK" . "grey")
@@ -259,6 +260,47 @@
 
   ) ;; org-mode
 
+;;; org-clock
+(use-package org-clock
+  :init
+  (require 'cl)
+
+  :config
+  ;; https://emacs.stackexchange.com/questions/35708/org-mode-how-to-generate-clock-report-for-hours-worked-each-day
+  ;;   #+BEGIN: weekly :tstart "<2020-05-11>" :tend "<now>"
+  ;;   #+END:
+  ;; `C-c C-c'
+  (defun org-dblock-write:weekly (params)
+    (cl-flet ((fmttm (tm) (format-time-string (org-time-stamp-format t t) tm)))
+      (let ((file (or (plist-get params :file) (buffer-file-name)))
+            (start (seconds-to-time
+                    (org-matcher-time (plist-get params :tstart))))
+            (end (seconds-to-time (org-matcher-time (plist-get params :tend)))))
+        (while (time-less-p start end)
+          (let ((next-week (time-add start
+                                     (date-to-time "1970-01-08T00:00Z")))
+                (week-begin (line-beginning-position))
+                (week-minutes 0))
+            (insert "\nWeekly Table from " (fmttm start) "\n")
+            (insert "| Day of Week | Time |\n|-\n")
+            (while (time-less-p start next-week)
+              (let* ((next-day (time-add start (date-to-time "1970-01-02T00:00Z")))
+                     (minutes
+                      (with-current-buffer (find-file-noselect file)
+                        (cadr (org-clock-get-table-data
+                               file
+                               (list :maxlevel 0
+                                     :tstart (fmttm start)
+                                     :tend (fmttm next-day)))))))
+                (insert "|" (format-time-string "%a" start)
+                        "|" (format "%d" minutes)
+                        "|\n")
+                (org-table-align)
+                (incf week-minutes minutes)
+                (setq start next-day)))
+            (when (equal week-minutes 0)
+              (delete-region week-begin (line-beginning-position))))))))
+  ) ;; org-clock
 
 ;;; org-colview
 (use-package org-colview
@@ -318,7 +360,6 @@
          )
 
   :init
-  (defvar my/org-agenda-root "~/Dropbox/org/agenda/")
   (defvar my/org-agenda-category-business "business")
   (defvar my/org-agenda-category-private "private")
   (defvar my/org-agenda-category-list (list my/org-agenda-category-business my/org-agenda-category-private))
