@@ -24,7 +24,8 @@
  '(set-mark-command-repeat-pop t)
  '(text-quoting-style 'grave)
  '(garbage-collection-messages t)
- '(gc-cons-threshold 1073741824)  ;; default: 268435456 (on 16GB RAM)
+ '(gc-cons-threshold 536870912) ;; (500MB) ;; default: 800000 (on 16GB RAM)
+ '(gc-cons-percentage 0.3) ;; default: 0.1
  '(custom-file (concat user-emacs-directory "custom.el"))
  '(line-number-display-limit 1000000)
  '(mode-line-frame-identification " ") ;; delete frame name
@@ -75,6 +76,9 @@
 (when window-system
   (set-scroll-bar-mode 'nil)
   (tool-bar-mode 0))
+
+;; enable mouse on terminal
+(xterm-mouse-mode 1)
 
 (setq-default echo-keystrokes 0)
 (setq-default fill-column 80)
