@@ -454,6 +454,7 @@
          ("M-_" . nil))
   :init
   (setq undo-tree-mode-lighter nil) ;; delete minor-mode in mode-line
+  (setq undo-tree-auto-save-history nil)
   :config
   (global-undo-tree-mode)
   ) ;; undo-tree
