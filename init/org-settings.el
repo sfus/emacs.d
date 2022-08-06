@@ -34,6 +34,7 @@
    ;;'(org-startup-indented t) ;; default: nil
    ;;'(org-directory (expand-file-name "~/Dropbox/")) ;; default: "~/org"
    ;;'(org-yank-folded-subtrees nil) ;; default: t
+   '(org-adapt-indentation t) ;; defalt: nil ;; https://orgmode.org/manual/Hard-indentation.html
    '(org-return-follows-link t)
    '(org-use-fast-todo-selection t)
    '(org-src-fontify-natively t)
@@ -64,6 +65,7 @@
        ("CANCELED" . "SteelBlue")
        ("BREAK" . "grey")
        ))
+   '(org-use-fast-todo-selection 'expert)
    '(org-priority-faces '((?A . org-warning)
                           (?B . org-todo)
                           (?C . org-priority)
@@ -365,7 +367,7 @@
   (defvar my/org-agenda-category-list (list my/org-agenda-category-business my/org-agenda-category-private))
   (defvar my/org-agenda-category-index -1)
   (defvar my/org-agenda-series '("DOING" "BREAK" "NEXT" "TODO" "WAITING" "DONE"))
-  (defvar my/org-agenda-toggle-columns '(" %8CLOCKSUM(Total){:}" "%8CLOCKSUM_T(Today){:}" " %SCHEDULED(Schedule)" " %DEADLINE(Deadline)"))
+  (defvar my/org-agenda-toggle-columns '(" %8CLOCKSUM(Total){:}" "%8CLOCKSUM_T(Today){:}" " %22SCHEDULED(Schedule)" " %22DEADLINE(Deadline)"))
   (defvar my/org-agenda-tag-filter-list '("@1st" "@zone" "@pocket" "@break"))
   (defvar my/org-agenda-tag-filter-index -1)
 
@@ -388,7 +390,7 @@
    ;;; -> https://orgmode.org/manual/Column-attributes.html#Column-attributes
    ;;'(org-columns-default-format "%25ITEM %TODO %3PRIORITY %CLOCKSUM %EFFORT %SCHEDULED %DEADLINE")
    ;;'(org-columns-default-format "%60ITEM %TODO %3PRIORITY %8EFFORT(Estimate){:} %8CLOCKSUM(Total){:} %8CLOCKSUM_T(Today){:}") ;; default: "%25ITEM %TODO %3PRIORITY %TAGS"
-   '(org-columns-default-format "%TODO %50ITEM %3PRIORITY %8EFFORT(Estimate){:} %SCHEDULED(Schedule) %DEADLINE(Deadline)") ;; default: "%25ITEM %TODO %3PRIORITY %TAGS"
+   '(org-columns-default-format "%TODO %46ITEM %3PRIORITY %8EFFORT(Estimate){:} %22SCHEDULED(Schedule) %22DEADLINE(Deadline)") ;; default: "%25ITEM %TODO %3PRIORITY %TAGS"
    '(org-habit-graph-column 80)  ;; default: 40
    '(org-habit-preceding-days 7) ;; default: 21
    '(org-habit-following-days 7) ;; default: 7
@@ -431,10 +433,16 @@
             (goto-char pos)
             (beginning-of-line))))
 
-    ;; https://emacs.stackexchange.com/questions/17797/how-to-narrow-to-subtree-in-org-agenda-follow-mode
+    ;; ;; How to narrow to subtree in org agenda follow mode? - Emacs Stack Exchange
+    ;; ;; -> https://emacs.stackexchange.com/questions/17797/how-to-narrow-to-subtree-in-org-agenda-follow-mode
+    ;; (advice-add 'org-agenda-goto :after
+    ;;             (lambda (&rest args)
+    ;;               (org-narrow-to-subtree)))
+
+    (require 'org-tree-slide)
     (advice-add 'org-agenda-goto :after
                 (lambda (&rest args)
-                  (org-narrow-to-subtree)))
+                  (org-tree-slide-mode)))
 
     ) ;; with-eval-after-load 'org-agenda
 
@@ -672,6 +680,62 @@
           org-pomodoro-timer (run-with-timer t 10 'org-pomodoro-tick)))
 
   ) ;; org-pomodoro
+
+
+;;; org-tree-slide
+;; -> https://qiita.com/takaxp/items/8dfb5d34dfcd79f9fa5c
+;; -> https://qiita.com/takaxp/items/6b2d1e05e7ce4517274d
+(use-package org-tree-slide
+  :ensure t
+  :bind (("<f8>" . org-tree-slide-mode)
+         :map org-tree-slide-mode-map
+         ("<f9>" . org-tree-slide-move-previous-tree)
+         ("<f10>" . org-tree-slide-move-next-tree))
+
+  :config
+  (org-tree-slide-narrowing-control-profile) ;; ナローイング用基本設定の適用
+  (setq org-tree-slide-modeline-display 'outside) ;; 高速動作用（推奨）
+  (setq org-tree-slide-skip-done nil) ;; DONEなタスクも表示する
+
+
+  (when (require 'org-clock nil t)
+    ;; org-clock-in を拡張
+    ;; 発動条件1）タスクが DONE になっていないこと（変更可）
+    ;; 発動条件2）アウトラインレベルが4まで．それ以上に深いレベルでは計測しない（変更可）
+    (defun my:org-clock-in ()
+      (setq vc-display-status nil) ;; モードライン節約
+      (when (and (looking-at (concat "^\\*+ " org-not-done-regexp))
+                 (memq (org-outline-level) '(1 2 3 4)))
+        (org-clock-in)))
+
+    ;; org-clock-out を拡張
+    (defun my:org-clock-out ()
+      ;; (setq vc-display-status t) ;; モードライン節約解除
+      (when (org-clocking-p)
+        (org-clock-out)))
+
+    ;; org-clock-in をナローイング時に呼び出す．
+    (add-hook 'org-tree-slide-before-narrow-hook #'my:org-clock-in)
+
+    ;; org-clock-out を適切なタイミングで呼び出す．
+    (add-hook 'org-tree-slide-before-move-next-hook #'my:org-clock-out)
+    (add-hook 'org-tree-slide-before-move-previous-hook #'my:org-clock-out)
+    (add-hook 'org-tree-slide-mode-stop-hook #'my:org-clock-out)
+
+    ;; ;; 一時的にナローイングを解く時にも計測を止めたい人向け
+    ;; (add-hook 'org-tree-slide-before-content-view-hook #'my:org-clock-out)
+
+    ;; Emacs終了時に org-clock-outし忘れのタスクの時計を止めます
+    (defun my:org-clock-out-and-save-when-exit ()
+      "Save buffers and stop clocking when kill emacs."
+      (when (org-clocking-p)
+        (org-clock-out)
+        (save-some-buffers t)))
+    (add-hook 'kill-emacs-hook #'my:org-clock-out-and-save-when-exit)
+
+
+    )
+  ) ;; org-tree-slide
 
 
 ;;; ox-hugo
