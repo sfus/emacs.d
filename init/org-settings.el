@@ -76,7 +76,7 @@
                           ))
    '(org-global-properties '(("Effort_ALL" . "0:30 1:00 1:30 2:00 2:30 3:00 3:30 4:00 4:30 0:10")))
 
-   ;;'(org-startup-folded nil) ;; default: t
+   '(org-startup-folded 'content) ;; default: showeverything
    ;;'(org-yank-adjusted-subtrees t) ;; default: nil
    '(org-clock-in-switch-to-state "DOING")
    '(org-clock-out-switch-to-state "BREAK")
@@ -140,6 +140,19 @@
       (org-cancel-repeater))
     (org-todo ARG))
 
+  (defun my/org-clock-out-and-widen ()
+    (interactive)
+    (when (org-clocking-p)
+      (org-clock-out)
+      (let* ((agenda "*Org Agenda*")
+             (win (get-buffer-window agenda)))
+        (when win
+          (save-window-excursion
+            (select-window win)
+            (org-agenda-redo-all))
+          )))
+    (widen))
+
   (dolist (item '(("h" org-speed-move-safe 'org-cycle)
                   ("j" org-speed-move-safe 'org-next-visible-heading) ;; default: org-goto
                   ("k" org-speed-move-safe 'org-previous-visible-heading)
@@ -148,7 +161,7 @@
                   ;;("J" org-speed-move-safe 'org-metadown)
                   ;;("K" org-speed-move-safe 'org-metaup)
                   ;;("L" org-speed-move-safe 'org-shiftmetaright) ;; default: org-shiftmetaleft
-                  ("q" widen)                                   ;; default: C-x n w
+                  ("q" my/org-clock-out-and-widen)              ;; default: C-x n w
                   ("A" org-force-cycle-archived)                ;; default: C-Tab
                   ("$" org-archive-subtree-default-with-confirmation) ;; default: C-c C-x C-a
                   ("D" my/org-todo-cancel-repeat "DONE")
@@ -333,6 +346,7 @@
          :map org-agenda-mode-map
          ("C-c C-c" . org-agenda-set-tags)  ;; default `:', `C-c C-q`
          ("M-q" . org-agenda-redo-all)
+         ("i" . my/org-agenda-goto-and-clock-in)
          ("j" . org-agenda-next-item) ;; default: org-agenda-goto-date
          ("k" . org-agenda-previous-item) ;; default: org-agenda-capture
          ("h" . my/org-agenda-todo-state-change-left) ;; default: org-agenda-holidays
@@ -411,38 +425,29 @@
     (define-key org-mode-map (kbd "M-i") 'my/org-pomodoro)
 
     ;; prevent current line disappear and keep cursor position on changing effort within column view
-    (defadvice org-agenda-set-effort (after my/org-agenda-set-effort-redo activate)
+    (defun my/org-agenda-org-columns-redo ()
       (if org-agenda-columns-active
           (let ((pos (point)))
             (org-columns-redo)
             (goto-char pos))))
-    (defadvice org-agenda-priority-up (after my/org-agenda-priority-up-redo activate)
-      (if org-agenda-columns-active
-          (let ((pos (point)))
-            (org-columns-redo)
-            (goto-char pos))))
-    (defadvice org-agenda-priority-down (after my/org-agenda-priority-down-redo activate)
-      (if org-agenda-columns-active
-          (let ((pos (point)))
-            (org-columns-redo)
-            (goto-char pos))))
-    (defadvice org-agenda-todo (after my/org-agenda-todo-redo activate)
+    (advice-add 'org-agenda-set-effort :after #'my/org-agenda-org-columns-redo)
+    (advice-add 'org-agenda-priority-up :after #'my/org-agenda-org-columns-redo)
+    (advice-add 'org-agenda-priority-down :after #'my/org-agenda-org-columns-redo)
+
+    (defun my/org-agenda-todo-redo ()
       (if org-agenda-columns-active
           (let ((pos (point)))
             (org-columns-redo)
             (goto-char pos)
             (beginning-of-line))))
+    (advice-add 'org-agenda-todo :after #'my/org-agenda-todo-redo)
 
-    ;; ;; How to narrow to subtree in org agenda follow mode? - Emacs Stack Exchange
-    ;; ;; -> https://emacs.stackexchange.com/questions/17797/how-to-narrow-to-subtree-in-org-agenda-follow-mode
-    ;; (advice-add 'org-agenda-goto :after
-    ;;             (lambda (&rest args)
-    ;;               (org-narrow-to-subtree)))
 
-    (require 'org-tree-slide)
+    ;; How to narrow to subtree in org agenda follow mode? - Emacs Stack Exchange
+    ;; -> https://emacs.stackexchange.com/questions/17797/how-to-narrow-to-subtree-in-org-agenda-follow-mode
     (advice-add 'org-agenda-goto :after
                 (lambda (&rest args)
-                  (org-tree-slide-mode)))
+                  (org-narrow-to-subtree)))
 
     ) ;; with-eval-after-load 'org-agenda
 
@@ -544,7 +549,16 @@
                (org-agenda-run-series name series)
                (if narrow-window
                    (delete-other-windows)))
-             (my/org-agenda-change-category my/org-agenda-category-index)))))
+             (my/org-agenda-change-category my/org-agenda-category-index)
+             (unless org-agenda-follow-mode
+               (org-agenda-follow-mode))
+             ))))
+
+  (defun my/org-agenda-goto-and-clock-in ()
+    (interactive)
+    (org-agenda-clock-in)
+    (org-agenda-goto)
+    (beginning-of-line))
 
   ;; shorten Org-Agenda mode-line for narrow window
   (defadvice org-agenda-set-mode-name (around my/org-agenda-set-mode-name activate)
@@ -722,8 +736,8 @@
     (add-hook 'org-tree-slide-before-move-previous-hook #'my:org-clock-out)
     (add-hook 'org-tree-slide-mode-stop-hook #'my:org-clock-out)
 
-    ;; ;; 一時的にナローイングを解く時にも計測を止めたい人向け
-    ;; (add-hook 'org-tree-slide-before-content-view-hook #'my:org-clock-out)
+    ;; 一時的にナローイングを解く時にも計測を止めたい人向け
+    (add-hook 'org-tree-slide-before-content-view-hook #'my:org-clock-out)
 
     ;; Emacs終了時に org-clock-outし忘れのタスクの時計を止めます
     (defun my:org-clock-out-and-save-when-exit ()
@@ -732,7 +746,6 @@
         (org-clock-out)
         (save-some-buffers t)))
     (add-hook 'kill-emacs-hook #'my:org-clock-out-and-save-when-exit)
-
 
     )
   ) ;; org-tree-slide
