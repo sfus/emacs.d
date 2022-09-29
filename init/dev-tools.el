@@ -15,7 +15,8 @@
   :init
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
   (setq ediff-split-window-function 'split-window-horizontally)
-  (setq ediff-diff-options "-twB")
+  ;;(setq ediff-diff-options "-twB")
+  (setq ediff-diff-options "-t")
 
   ;; `Q' => quit and return terminal
   (defun my/ediff-quit-and-kill-terminal (&optional arg)
