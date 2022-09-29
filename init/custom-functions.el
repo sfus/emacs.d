@@ -227,8 +227,7 @@ With argument, do this that many times."
   (declare (indent 0))
   (let ((message-log-max nil))
     `(with-temp-message (or (current-message) "") ,@body)))
-(run-with-idle-timer 30 t '(lambda ()          ;; save .recentf per 30 sec
-   (with-suppressed-message (recentf-save-list))))
+(run-with-idle-timer 30 t #'(with-suppressed-message (recentf-save-list))) ;; save .recentf per 30 sec
 (recentf-mode 1)
 
 ;;------------------------------------------------------------
@@ -264,7 +263,7 @@ With argument, do this that many times."
         (dotimes (_ (or n 1))
           (insert str "\n"))))
     (move-to-column orig-column)))
-(global-set-key (kbd "C-M-c") #'my/editutil-duplicate-thing)
+(global-set-key (kbd "C-M-c") 'my/editutil-duplicate-thing)
 
 ;;------------------------------------------------------------
 

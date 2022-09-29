@@ -28,6 +28,9 @@
   (unless (boundp 'org-speed-commands-user)
     (defvaralias 'org-speed-commands-user 'org-speed-commands))
   (defvar my/org-agenda-root "~/Dropbox/org/agenda/")
+  (defvar my/org-agenda-category-business "business")
+  (defvar my/org-agenda-category-private "private")
+  (defvar my/org-agenda-category-list (list my/org-agenda-category-business my/org-agenda-category-private))
 
   (custom-set-variables
    '(org-startup-truncated nil)
@@ -376,9 +379,6 @@
          )
 
   :init
-  (defvar my/org-agenda-category-business "business")
-  (defvar my/org-agenda-category-private "private")
-  (defvar my/org-agenda-category-list (list my/org-agenda-category-business my/org-agenda-category-private))
   (defvar my/org-agenda-category-index -1)
   (defvar my/org-agenda-series '("DOING" "BREAK" "NEXT" "TODO" "WAITING" "DONE"))
   (defvar my/org-agenda-toggle-columns '(" %8CLOCKSUM(Total){:}" "%8CLOCKSUM_T(Today){:}" " %22SCHEDULED(Schedule)" " %22DEADLINE(Deadline)"))
