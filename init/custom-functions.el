@@ -218,16 +218,16 @@ With argument, do this that many times."
 
 ;;------------------------------------------------------------
 
-;; Suppress recentf auto save message
-;; -> https://masutaka.net/chalow/2011-10-30-2.html
-;; -> http://keisanbutsuriya.hateblo.jp/entry/2015/02/15/174758
-;; -> https://emacs.stackexchange.com/questions/14706/suppress-message-in-minibuffer-when-a-buffer-is-saved
-(defmacro with-suppressed-message (&rest body)
-  "Suppress new messages temporarily in the echo area and the `*Messages*' buffer while BODY is evaluated."
-  (declare (indent 0))
-  (let ((message-log-max nil))
-    `(with-temp-message (or (current-message) "") ,@body)))
-(run-with-idle-timer 30 t #'(with-suppressed-message (recentf-save-list))) ;; save .recentf per 30 sec
+;; ;; Suppress recentf auto save message
+;; ;; -> https://masutaka.net/chalow/2011-10-30-2.html
+;; ;; -> http://keisanbutsuriya.hateblo.jp/entry/2015/02/15/174758
+;; ;; -> https://emacs.stackexchange.com/questions/14706/suppress-message-in-minibuffer-when-a-buffer-is-saved
+;; (defmacro with-suppressed-message (&rest body)
+;;   "Suppress new messages temporarily in the echo area and the `*Messages*' buffer while BODY is evaluated."
+;;   (declare (indent 0))
+;;   (let ((message-log-max nil))
+;;     `(with-temp-message (or (current-message) "") ,@body)))
+;; (run-with-idle-timer 30 t #'(with-suppressed-message (recentf-save-list))) ;; save .recentf per 30 sec
 (recentf-mode 1)
 
 ;;------------------------------------------------------------
