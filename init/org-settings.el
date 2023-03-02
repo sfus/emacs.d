@@ -164,7 +164,8 @@
                   ;;("J" org-speed-move-safe 'org-metadown)
                   ;;("K" org-speed-move-safe 'org-metaup)
                   ;;("L" org-speed-move-safe 'org-shiftmetaright) ;; default: org-shiftmetaleft
-                  ("q" my/org-clock-out-and-widen)              ;; default: C-x n w
+                  ;;("q" my/org-clock-out-and-widen)              ;; default: C-x n w
+                  ("q" widen)
                   ("A" org-force-cycle-archived)                ;; default: C-Tab
                   ("$" org-archive-subtree-default-with-confirmation) ;; default: C-c C-x C-a
                   ("D" my/org-todo-cancel-repeat "DONE")
@@ -696,59 +697,59 @@
   ) ;; org-pomodoro
 
 
-;;; org-tree-slide
-;; -> https://qiita.com/takaxp/items/8dfb5d34dfcd79f9fa5c
-;; -> https://qiita.com/takaxp/items/6b2d1e05e7ce4517274d
-(use-package org-tree-slide
-  :ensure t
-  :bind (("<f8>" . org-tree-slide-mode)
-         :map org-tree-slide-mode-map
-         ("<f9>" . org-tree-slide-move-previous-tree)
-         ("<f10>" . org-tree-slide-move-next-tree))
-
-  :config
-  (org-tree-slide-narrowing-control-profile) ;; ナローイング用基本設定の適用
-  (setq org-tree-slide-modeline-display 'outside) ;; 高速動作用（推奨）
-  (setq org-tree-slide-skip-done nil) ;; DONEなタスクも表示する
-
-
-  (when (require 'org-clock nil t)
-    ;; org-clock-in を拡張
-    ;; 発動条件1）タスクが DONE になっていないこと（変更可）
-    ;; 発動条件2）アウトラインレベルが4まで．それ以上に深いレベルでは計測しない（変更可）
-    (defun my:org-clock-in ()
-      (setq vc-display-status nil) ;; モードライン節約
-      (when (and (looking-at (concat "^\\*+ " org-not-done-regexp))
-                 (memq (org-outline-level) '(1 2 3 4)))
-        (org-clock-in)))
-
-    ;; org-clock-out を拡張
-    (defun my:org-clock-out ()
-      ;; (setq vc-display-status t) ;; モードライン節約解除
-      (when (org-clocking-p)
-        (org-clock-out)))
-
-    ;; org-clock-in をナローイング時に呼び出す．
-    (add-hook 'org-tree-slide-before-narrow-hook #'my:org-clock-in)
-
-    ;; org-clock-out を適切なタイミングで呼び出す．
-    (add-hook 'org-tree-slide-before-move-next-hook #'my:org-clock-out)
-    (add-hook 'org-tree-slide-before-move-previous-hook #'my:org-clock-out)
-    (add-hook 'org-tree-slide-mode-stop-hook #'my:org-clock-out)
-
-    ;; 一時的にナローイングを解く時にも計測を止めたい人向け
-    (add-hook 'org-tree-slide-before-content-view-hook #'my:org-clock-out)
-
-    ;; Emacs終了時に org-clock-outし忘れのタスクの時計を止めます
-    (defun my:org-clock-out-and-save-when-exit ()
-      "Save buffers and stop clocking when kill emacs."
-      (when (org-clocking-p)
-        (org-clock-out)
-        (save-some-buffers t)))
-    (add-hook 'kill-emacs-hook #'my:org-clock-out-and-save-when-exit)
-
-    )
-  ) ;; org-tree-slide
+;; ;;; org-tree-slide
+;; ;; -> https://qiita.com/takaxp/items/8dfb5d34dfcd79f9fa5c
+;; ;; -> https://qiita.com/takaxp/items/6b2d1e05e7ce4517274d
+;; (use-package org-tree-slide
+;;   :ensure t
+;;   :bind (("<f8>" . org-tree-slide-mode)
+;;          :map org-tree-slide-mode-map
+;;          ("<f9>" . org-tree-slide-move-previous-tree)
+;;          ("<f10>" . org-tree-slide-move-next-tree))
+;;
+;;   :config
+;;   (org-tree-slide-narrowing-control-profile) ;; ナローイング用基本設定の適用
+;;   (setq org-tree-slide-modeline-display 'outside) ;; 高速動作用（推奨）
+;;   (setq org-tree-slide-skip-done nil) ;; DONEなタスクも表示する
+;;
+;;
+;;   (when (require 'org-clock nil t)
+;;     ;; org-clock-in を拡張
+;;     ;; 発動条件1）タスクが DONE になっていないこと（変更可）
+;;     ;; 発動条件2）アウトラインレベルが4まで．それ以上に深いレベルでは計測しない（変更可）
+;;     (defun my:org-clock-in ()
+;;       (setq vc-display-status nil) ;; モードライン節約
+;;       (when (and (looking-at (concat "^\\*+ " org-not-done-regexp))
+;;                  (memq (org-outline-level) '(1 2 3 4)))
+;;         (org-clock-in)))
+;;
+;;     ;; org-clock-out を拡張
+;;     (defun my:org-clock-out ()
+;;       ;; (setq vc-display-status t) ;; モードライン節約解除
+;;       (when (org-clocking-p)
+;;         (org-clock-out)))
+;;
+;;     ;; org-clock-in をナローイング時に呼び出す．
+;;     (add-hook 'org-tree-slide-before-narrow-hook #'my:org-clock-in)
+;;
+;;     ;; org-clock-out を適切なタイミングで呼び出す．
+;;     (add-hook 'org-tree-slide-before-move-next-hook #'my:org-clock-out)
+;;     (add-hook 'org-tree-slide-before-move-previous-hook #'my:org-clock-out)
+;;     (add-hook 'org-tree-slide-mode-stop-hook #'my:org-clock-out)
+;;
+;;     ;; 一時的にナローイングを解く時にも計測を止めたい人向け
+;;     (add-hook 'org-tree-slide-before-content-view-hook #'my:org-clock-out)
+;;
+;;     ;; Emacs終了時に org-clock-outし忘れのタスクの時計を止めます
+;;     (defun my:org-clock-out-and-save-when-exit ()
+;;       "Save buffers and stop clocking when kill emacs."
+;;       (when (org-clocking-p)
+;;         (org-clock-out)
+;;         (save-some-buffers t)))
+;;     (add-hook 'kill-emacs-hook #'my:org-clock-out-and-save-when-exit)
+;;
+;;     )
+;;   ) ;; org-tree-slide
 
 
 ;;; ox-hugo
