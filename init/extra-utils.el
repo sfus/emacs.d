@@ -351,13 +351,13 @@
 
   :config
   ;; Disable helm-mode on direx:do-copy-files
-  (defadvice direx:do-copy-files
-      (around direx:do-copy-files-default activate)
+  (defun my/direx--copy-files-around (orig-fun &rest args)
     (let ((helm-mode-p helm-mode))
-      (if helm-mode-p (helm-mode -1))
-      ad-do-it
-      (if helm-mode-p (helm-mode 1))))
-
+      (when helm-mode-p (helm-mode -1))
+      (unwind-protect
+          (apply orig-fun args)
+        (when helm-mode-p (helm-mode 1)))))
+  (advice-add 'direx:do-copy-files :around #'my/direx--copy-files-around)
   ) ;; direx
 
 
@@ -479,6 +479,7 @@
 ;; -> http://d.hatena.ne.jp/rubikitch/20090220/text_adjust
 ;;      http://www.rubyist.net/~rubikitch/archive/mell.el
 ;;      http://www.rubyist.net/~rubikitch/archive/text-adjust.el
+;; -> https://github.com/uwabami/text-adjust.el
 (use-package text-adjust
   :bind ("C-x M-q" . text-adjust-space)
   :init
@@ -574,24 +575,25 @@
   ;;(evil-mode 1)
 
   ;; -> https://tarao.hatenablog.com/entry/20130304/evil_config
-  (defadvice evil-paste-pop (around evil-paste-or-move-line activate)
+  (defun my/evil-paste-pop-around (orig-fun &rest args)
     ;; evil-paste-popできなかったらprevious-lineする
-    "If there is no just-yanked stretch of killed text, just move
-to previous line."
+    "If there is no just-yanked stretch of killed text, just move to previous line."
     (condition-case err
-        ad-do-it
+        (apply orig-fun args)
       (error (if (eq this-command 'evil-paste-pop)
                  (call-interactively 'previous-line)
                (signal (car err) (cdr err))))))
-  (defadvice evil-paste-pop-next (around evil-paste-or-move-line activate)
+  (advice-add 'evil-paste-pop :around #'my/evil-paste-pop-around)
+
+  (defun my/evil-paste-pop-next-around (orig-fun &rest args)
     ;; evil-paste-pop-nextできなかったらnext-lineする
-    "If there is no just-yanked stretch of killed text, just move
-to next line."
+    "If there is no just-yanked stretch of killed text, just move to next line."
     (condition-case err
-        ad-do-it
+        (apply orig-fun args)
       (error (if (eq this-command 'evil-paste-pop-next)
                  (call-interactively 'next-line)
                (signal (car err) (cdr err))))))
+  (advice-add 'evil-paste-pop-next :around #'my/evil-paste-pop-next-around)
 
   ) ;; Evil
 

@@ -30,8 +30,8 @@
 ;; change help prefix to C-x C-h
 (define-key ctl-x-map (kbd "C-h") 'help-command) ;; default: C-h, F1
 
-;; C-M-k => kill-this-buffer (default: kill-sexp)
-(define-key global-map (kbd "C-M-k") 'kill-this-buffer)
+;; C-M-k => kill-current-buffer (default: kill-sexp)
+(define-key global-map (kbd "C-M-k") 'kill-current-buffer)
 
 ;; Swap just-one-space (M-SPC) and dabbrev-expand (M-/)
 (global-set-key (kbd "M-SPC") 'dabbrev-expand)

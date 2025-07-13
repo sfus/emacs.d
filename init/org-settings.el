@@ -561,12 +561,13 @@
     (org-agenda-goto)
     (beginning-of-line))
 
-  ;; shorten Org-Agenda mode-line for narrow window
-  (defadvice org-agenda-set-mode-name (around my/org-agenda-set-mode-name activate)
+  (defun my/org-agenda-set-mode-name-around (orig-fun &rest args)
+    "Shorten Org-Agenda mode-line when org-pomodoro is active."
     (if (not (org-pomodoro-active-p))
-        ad-do-it
+        (apply orig-fun args)
       (setq mode-name '("Org-Agenda"))
       (force-mode-line-update)))
+  (advice-add 'org-agenda-set-mode-name :around #'my/org-agenda-set-mode-name-around)
 
   ) ;; org-agenda
 
@@ -684,8 +685,8 @@
     (org-pomodoro)
     (org-agenda-redo-all))
 
-  (defadvice org-pomodoro-set (around org-pomodoro-set-lazy (state) activate)
-    "Set the org-pomodoro STATE."
+  (defun my/org-pomodoro-set-around (orig-fun state)
+    "Set the org-pomodoro STATE (lazily override default behavior)."
     (setq org-pomodoro-state state
           org-pomodoro-end-time
           (cl-case state
@@ -693,6 +694,7 @@
             (:short-break (time-add (current-time) (* 60 org-pomodoro-short-break-length)))
             (:long-break (time-add (current-time) (* 60 org-pomodoro-long-break-length))))
           org-pomodoro-timer (run-with-timer t 10 'org-pomodoro-tick)))
+  (advice-add 'org-pomodoro-set :around #'my/org-pomodoro-set-around)
 
   ) ;; org-pomodoro
 

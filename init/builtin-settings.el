@@ -294,15 +294,16 @@ otherwise, execute `dired-view-file'."
   (define-key dired-mode-map (kbd "\C-m") 'dired-advertised-find-file*)
 
   ;; use `dired-find-alternate-file' to go up directory (`dired-up-directory')
-  (defadvice dired-up-directory (around dired-up-directory* (arg) activate)
-    "In dired, run `dired-up-directory' and kill previous buffer."
+  (defun my/dired-up-directory-around (orig-fun &rest args)
+    "In dired, run `dired-up-directory' and kill previous buffer if not reused."
     (let ((buf (current-buffer)))
-      ad-do-it
-      (if (and (eq 'dired-mode  major-mode)       ; in dired-mode
-               (null arg)                         ; no dired-other-window
-               (not (get-buffer-window buf))      ; unless other-window has same dired-buf
-               (not (eq (current-buffer) buf)))   ; unless in the root directory
-          (kill-buffer buf))))
+      (apply orig-fun args)
+      (when (and (eq major-mode 'dired-mode)       ; still in dired-mode
+                 (null (car args))                 ; no prefix arg (no dired-other-window)
+                 (not (get-buffer-window buf))     ; original buffer is not visible
+                 (not (eq (current-buffer) buf)))  ; not in same buffer (i.e., changed directory)
+        (kill-buffer buf))))
+  (advice-add 'dired-up-directory :around #'my/dired-up-directory-around)
 
   ;; view-mode
   (with-eval-after-load 'view
