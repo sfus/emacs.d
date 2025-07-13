@@ -643,6 +643,7 @@
 
   (defun my/org-pomodoro-started-hook ()
     (my/org-pomodoro-kill-app)
+    (sleep-for 1)
     (my/org-pomodoro-launch-app))
   (defun my/org-pomodoro-finished-hook ())
   (defun my/org-pomodoro-break-finished-hook ()
@@ -660,7 +661,7 @@
   (add-hook 'org-pomodoro-finished-hook 'my/org-pomodoro-finished-hook)
   (add-hook 'org-pomodoro-killed-hook 'my/org-pomodoro-killed-hook)
 
-  ;; (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook) ;; auto-restart
+  (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-break-finished-hook) ;; auto-restart
   ;; (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-kill-app) ;; not auto-restart
 
   (defun my/org-pomodoro (arg)

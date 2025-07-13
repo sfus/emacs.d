@@ -326,7 +326,7 @@
 ;; -> https://sites.google.com/site/shidoinfo/Home/programing-lang/%E9%96%A2%E6%95%B0%E5%9E%8B%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0%E8%A8%80%E8%AA%9E/ecmascript/javascript-kai-fa-huan-jing/emacs-javascript/js2-mode
 (use-package js2-mode
   :ensure t
-  :mode "\\.js\\'"
+  :mode ("\\.js\\'" "\\.gs\\'")
   :init
   (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
   (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . js2-jsx-mode)) ;; (version< emacs-version "27.0")
