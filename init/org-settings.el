@@ -282,7 +282,7 @@
 ;;; org-clock
 (use-package org-clock
   :init
-  (require 'cl)
+  (require 'cl-lib)
 
   :config
   ;; https://emacs.stackexchange.com/questions/35708/org-mode-how-to-generate-clock-report-for-hours-worked-each-day
