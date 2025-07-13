@@ -424,14 +424,14 @@
 ;;   ) ;; yascroll
 
 
-;;; which-key
-(use-package which-key
-  :ensure t
-  :init
-  (setq which-key-lighter "")
-  (setq which-key-idle-delay 0.5)
-  (which-key-mode +1)
-  ) ;; which-key
+;; ;;; which-key
+;; (use-package which-key
+;;   :ensure t
+;;   :init
+;;   (setq which-key-lighter "")
+;;   (setq which-key-idle-delay 0.5)
+;;   (which-key-mode +1)
+;;   ) ;; which-key
 
 
 ;;; smartrep

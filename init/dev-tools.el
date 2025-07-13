@@ -160,23 +160,23 @@
 ;; $ go build -gcflags "-N -l" foo.go
 
 
-;;; git-commit (included by magit)
-(use-package git-commit
-  :ensure t
-  :init
-  (defun my/git-commit-commit-after (_unused)
-    (delete-window))
-  (defun my/git-commit-mode-hook ()
-    (setq-local company-backends '(company-ispell company-files company-dabbrev))
-    (flyspell-mode +1)
-    )
-
-  (add-hook 'git-commit-mode-hook 'my/git-commit-mode-hook)
-  (advice-add 'git-commit-commit :after 'my/git-commit-commit-after)
-
-  :config
-  (global-git-commit-mode t)
-  ) ;; git-commit
+;; ;;; git-commit (included by magit)
+;; (use-package git-commit
+;;   :ensure t
+;;   :init
+;;   (defun my/git-commit-commit-after (_unused)
+;;     (delete-window))
+;;   (defun my/git-commit-mode-hook ()
+;;     (setq-local company-backends '(company-ispell company-files company-dabbrev))
+;;     (flyspell-mode +1)
+;;     )
+;;
+;;   (add-hook 'git-commit-mode-hook 'my/git-commit-mode-hook)
+;;   (advice-add 'git-commit-commit :after 'my/git-commit-commit-after)
+;;
+;;   :config
+;;   (global-git-commit-mode t)
+;;   ) ;; git-commit
 
 
 ;;; magit
