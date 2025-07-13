@@ -40,6 +40,9 @@
  '(enable-recursive-minibuffers t)      ;; enable recursive edit in minibuffer
  '(kill-read-only-ok t)                 ;; enable kill to copy even if read only buffer
  '(delete-by-moving-to-trash t)         ;; enable trash
+ ;; warning
+ '(warning-minimum-level :debug)
+ '(warning-minimum-log-level :debug)
  ;; edebug
  '(debug-on-error nil)
  '(eval-expression-print-level nil)
