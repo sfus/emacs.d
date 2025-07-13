@@ -223,7 +223,8 @@
  '(helm-ff-dotted-directory ((t (:background "DimGray" :foreground "white"))))
 
  '(tabbar-default ((t (:foreground "ghost white" :background "gray50" :height 1.0))))
- '(tabbar-selected ((t (:foreground "ghost white" :background "dark slate blue" :height 1.0))))
+ '(tabbar-selected ((t (:foreground "orange" :background "dark slate blue" :height 1.0))))
+ '(tabbar-selected-modified ((t (:foreground "tomato" :background "dark slate blue" :height 1.0))))
 
  '(elscreen-tab-background-face ((t (:background "black" :height 1.0))))
  '(elscreen-tab-control-face ((t (:background "black" :foreground "ghost white" :height 1.0))))
