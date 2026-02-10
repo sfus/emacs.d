@@ -42,6 +42,8 @@
          ("C-c C-i" . helm-imenu) ;; default: ident-rigidly
          ("C-c o"   . helm-occur)
          ("C-c <SPC>" . helm-all-mark-rings)
+         ("M-g ."   . helm-do-grep-ag)
+         ("M-g /"   . my/helm-do-grep-ag-project-dir)
 
          :map helm-map
          ("C-p"   . helm-previous-line)
@@ -63,9 +65,21 @@
                                     helm-source-bookmarks
                                     helm-source-buffers-list
                                     helm-source-buffer-not-found))
+
   :config
   (when (executable-find "curl")
     (setq url-retrieve-synchronously t))
+
+  ;;; helm-grep with ripgrep
+  ;; -> https://www.ncaq.net/2022/02/17/21/02/27/
+  (setq helm-grep-ag-command "rg --color=always --smart-case --no-heading --line-number --type-not=svg --sort=path %s -- %s %s")
+  (setq helm-grep-file-path-style 'absolute)
+  (defun my/helm-do-grep-ag-project-dir (arg)
+    "Runs helm-do-grep-ag on files under the project directory."
+    (interactive "P")
+    (helm-grep-ag (expand-file-name (project-root (project-current))) arg))
+  ;; helm-grep
+
 
   ;;; helm-files
   (use-package helm-files
@@ -82,7 +96,7 @@
     :bind (:map help-map
                 ("a" . helm-apropos)            ;; default: apropos-command
                 ("C-m" . helm-man-woman))       ;; default: view-order-manuals
-    ) ;; help for heml
+    ) ;; help for helm
 
   (use-package org
     :bind (:map org-mode-map
@@ -105,25 +119,26 @@
   ) ;; helm-config
 
 
-;;; helm-descbinds
-(use-package helm-descbinds
-  :ensure t
-  :after help
-  :init
-  (helm-descbinds-mode +1)
-  ) ;; helm-descbinds
+;;; Desable for which-key conflicts
+;; ;;; helm-descbinds
+;; (use-package helm-descbinds
+;;   :ensure t
+;;   :after help
+;;   :init
+;;   (helm-descbinds-mode +1)
+;;   ) ;; helm-descbinds
 
 
-;;; helm-ag
-(use-package helm-ag
-  :ensure t
-  :bind (("M-g ." . helm-do-ag)
-         ("M-g ," . helm-ag-pop-stack)
-         ("M-g /" . helm-ag-project-root))
-  :init
-  (setq helm-ag-insert-at-point 'symbol)
-
-  ) ;; helm-ag
+;; ;;; helm-ag
+;; (use-package helm-ag
+;;   :ensure t
+;;   :bind (("M-g ." . helm-do-ag)
+;;          ("M-g ," . helm-ag-pop-stack)
+;;          ("M-g /" . helm-ag-project-root))
+;;   :init
+;;   (setq helm-ag-insert-at-point 'symbol)
+;;
+;;   ) ;; helm-ag
 
 
 ;; ;;; emacs-powerline
@@ -424,14 +439,19 @@
 ;;   ) ;; yascroll
 
 
-;; ;;; which-key
-;; (use-package which-key
-;;   :ensure t
-;;   :init
-;;   (setq which-key-lighter "")
-;;   (setq which-key-idle-delay 0.5)
-;;   (which-key-mode +1)
-;;   ) ;; which-key
+;;; which-key
+;; disable helm-descbinds for which-key conflicts
+(use-package helm-descbinds
+  :ensure t
+  :disabled t)
+(helm-descbinds-mode -1)
+(use-package which-key
+  :ensure t
+  :init
+  (setq which-key-lighter "")
+  (setq which-key-idle-delay 0.5)
+  (which-key-mode +1)
+  ) ;; which-key
 
 
 ;;; smartrep
