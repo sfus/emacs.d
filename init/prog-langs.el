@@ -1,3 +1,92 @@
+;;; lsp-mode
+(use-package lsp-mode
+  :ensure t
+  :commands lsp-deferred
+  :bind (:map lsp-mode-map
+              ("M-." . lsp-find-definition))
+  :hook (go-mode . lsp-deferred)
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (setq lsp-enable-snippet nil
+        lsp-headerline-breadcrumb-enable nil
+        lsp-eldoc-enable-hover t
+        lsp-eldoc-render-all t ;; Show more complete hover info
+        )
+  ) ;; lsp-mode
+
+;; disable native eldoc (use lsp only)
+(add-hook 'lsp-mode-hook
+          (lambda ()
+            (setq-local eldoc-documentation-function #'ignore)))
+
+
+;;; go-mode
+(use-package go-mode
+  :ensure t
+  :commands (dap-debug dap-breakpoint-toggle)
+  :bind (:map go-mode-map
+              ("M-g d" . 'dap-debug)
+              ("C-M-x" . 'dap-breakpoint-toggle)
+              )
+  :hook (go-mode-hook . my/go-mode-hook)
+  :init
+  (setq gofmt-command "goimports")
+  ) ;; go-mode
+
+(defun my/go-mode-hook ()
+  ;; (global-set-key (kbd "M-g d") 'dap-debug)
+  ;; (global-set-key (kbd "M-g M-d") 'dap-breakpoint-toggle) ;; default: eval-defun
+  (add-hook 'before-save-hook #'gofmt-before-save nil t) ;; run gofmt on save
+  (setq-local tab-width 4
+             indent-tabs-mode t)
+  )
+
+;;; go-mode
+;; C-c C-a			go-import-add
+;; C-c C-d			godef-describe
+;; C-c C-j			godef-jump
+
+;; C-M-q			prog-indent-sexp
+;; M-q				prog-fill-reindent-defun
+
+;; C-c C-f a		go-goto-arguments
+;; C-c C-f d		go-goto-docstring
+;; C-c C-f f		go-goto-function
+;; C-c C-f i		go-goto-imports
+;; C-c C-f m		go-goto-method-receiver
+;; C-c C-f n		go-goto-function-name
+;; C-c C-f r		go-goto-return-values
+
+;; C-x 4 C-c C-j	godef-jump-other-window
+
+
+;;; dap-mode (Debug Adapter Protocol)
+(use-package dap-mode
+  :ensure t
+  :after lsp-mode
+  :bind (:map dap-mode-map
+              ("M-\\" . dap-continue)
+              ("M-'" . dap-next)
+              ("M-;" . dap-step-in)
+              ("M-:" . dap-step-out) ;; default: eval-expression
+              ("M-g M-r" . dap-ui-repl)
+
+              ("<f8>"  . dap-continue)
+              ("<f9>"  . dap-breakpoint-toggle)
+              ("<f10>" . dap-next)
+              ("<f11>" . dap-step-in)
+              ("S-<f11>" . dap-step-out)
+              )
+
+  :config
+  (dap-auto-configure-mode)
+
+  ;; go install github.com/go-delve/delve/cmd/dlv@latest
+  (require 'dap-dlv-go)
+  ) ;; dap-mode
+
+
 ;;; asm-mode
 (use-package asm-mode
   :bind (:map asm-mode-map
@@ -187,63 +276,64 @@
 ;;  ) ;; distel
 
 
-;;; Go
-(use-package go-mode
-  :ensure t
-  :bind (:map go-mode-map
-              ("C-c a"      . go-import-add)
-              ("C-c C-a"    . helm-godoc-import)
-              ("C-c C-j"    . go-direx-pop-to-buffer)
-              ("C-c t"      . go-add-tags)
-              ("C-c C-d"    . helm-godoc)
-              ("C-c d"      . progutil-go-gogetdoc)
-              ("C-c p s"    . go-set-project)
-              ("C-c p r"    . go-reset-gopath)
-              ("M-."        . godef-jump)
-              ("M-,"        . pop-tag-mark)
-              (":"          . nil)
-              ("C-c C-r"    . go-remove-unused-imports)
-
-              ;; godef-jump ($ go get -u code.google.com/p/rog-go/exp/cmd/godef)
-              ("M-j"        . godef-jump) ;; default: C-c C-j
-              )
-  :hook ((go-mode-hook . my/go-mode-hook)
-         (go-mode-hook . go-eldoc-setup))
-  :init
-  (setq ac-go-expand-arguments-into-snippets nil)
-  (setq company-go-insert-arguments nil)
-  (setq gofmt-command "goimports")
-
-  (defun my/go-mode-hook ()
-    ;;(setq-local company-backends '(company-go company-files company-dabbrev))
-    (delete 'ac-source-words-in-same-mode-buffers ac-sources)
-    (setq compile-command "go test")
-    (setq flycheck-go-vet-shadow 'strict)
-
-    (add-hook 'before-save-hook 'gofmt-before-save) ;; run gofmt on save
-    (set (make-local-variable 'ac-auto-start) t)
-    )
-
-  :config
-  (use-package go-autocomplete
-    :ensure t)
-  (use-package go-guru
-    :ensure t)
-
-  ) ;; go
-
-;; go-mode
-;; -> http://qiita.com/senda-akiha/items/8bbdd3e59c51d5619ea7
+;; ;;; Go
+;; (use-package go-mode
+;;   :ensure t
+;;   :bind (:map go-mode-map
+;;               ("C-c a"      . go-import-add)
+;;               ("C-c C-a"    . helm-godoc-import)
+;;               ("C-c C-j"    . go-direx-pop-to-buffer)
+;;               ("C-c t"      . go-add-tags)
+;;               ("C-c C-d"    . helm-godoc)
+;;               ("C-c d"      . progutil-go-gogetdoc)
+;;               ("C-c p s"    . go-set-project)
+;;               ("C-c p r"    . go-reset-gopath)
+;;               ("M-."        . godef-jump)
+;;               ("M-,"        . pop-tag-mark)
+;;               (":"          . nil)
+;;               ("C-c C-r"    . go-remove-unused-imports)
 ;;
-;; C-c C-a (go-import-add)
-;;         (go-remove-unused-imports)
-;; C-M-a   (beginning-of-defun)
-;; C-M-e   (end-of-defun)
-;; C-M-h   (mark-defun)
-;; C-x n d (narrow-to-defun)
-;;         (go-goto-imports)
-;; C-c C-d (godef-describe)
-;;         (go-coverage)
+;;               ;; godef-jump ($ go get -u code.google.com/p/rog-go/exp/cmd/godef)
+;;               ("M-j"        . godef-jump) ;; default: C-c C-j
+;;               )
+;;   :hook ((go-mode-hook . my/go-mode-hook)
+;;          ;;(go-mode-hook . go-eldoc-setup)
+;;          )
+;;   :init
+;;   (setq ac-go-expand-arguments-into-snippets nil)
+;;   (setq company-go-insert-arguments nil)
+;;   (setq gofmt-command "goimports")
+;;
+;;   (defun my/go-mode-hook ()
+;;     ;;(setq-local company-backends '(company-go company-files company-dabbrev))
+;;     (delete 'ac-source-words-in-same-mode-buffers ac-sources)
+;;     (setq compile-command "go test")
+;;     (setq flycheck-go-vet-shadow 'strict)
+;;
+;;     (add-hook 'before-save-hook 'gofmt-before-save) ;; run gofmt on save
+;;     (set (make-local-variable 'ac-auto-start) t)
+;;     )
+;;
+;;   :config
+;;   (use-package go-autocomplete
+;;     :ensure t)
+;;   (use-package go-guru
+;;     :ensure t)
+;;
+;;   ) ;; go
+;;
+;; ;; go-mode
+;; ;; -> http://qiita.com/senda-akiha/items/8bbdd3e59c51d5619ea7
+;; ;;
+;; ;; C-c C-a (go-import-add)
+;; ;;         (go-remove-unused-imports)
+;; ;; C-M-a   (beginning-of-defun)
+;; ;; C-M-e   (end-of-defun)
+;; ;; C-M-h   (mark-defun)
+;; ;; C-x n d (narrow-to-defun)
+;; ;;         (go-goto-imports)
+;; ;; C-c C-d (godef-describe)
+;; ;;         (go-coverage)
 
 
 ;;; haskell

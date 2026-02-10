@@ -82,7 +82,7 @@
 ;; -> http://murakan.cocolog-nifty.com/blog/2009/01/gud-on-emacs23-.html
 ;; -> https://gist.github.com/chokkan/5693497
 (use-package gud
-  :bind (("M-g M-d" . gdb)
+  :bind (("M-g D" . gdb)
          ;; ("M-t" . gud-tbreak) ;; default C-x C-a C-t
          :map gud-minor-mode-map
          ;; like chrome key bindings
@@ -311,8 +311,12 @@
 ;;; company
 (use-package company
   :ensure t
+  :hook
+  (after-init . global-company-mode)
+
   :bind (("C-M-i" . company-complete)
          :map company-active-map
+         ("C-h" . backward-delete-char)
          ("C-n" . company-select-next)
          ("C-p" . company-select-previous)
          ("C-s" . company-filter-candidates)
@@ -322,16 +326,16 @@
          :map emacs-lisp-mode-map
          ("C-M-i" . company-complete)
          :map company-search-map
+         ("C-h" . backward-delete-char)
          ("C-n" . 'company-select-next)
          ("C-p" . 'company-select-previous))
 
   :init
   (setq company-selection-wrap-around t)
-  (setq company-idle-delay nil)
+  (setq company-minimum-prefix-length 1)
+  (setq company-idle-delay 0.1)
 
   :custom
-  (global-company-mode +1)
-
   ;; suppress minibuffer message
   (fset 'company-echo-show #'ignore)
   ) ;; company
@@ -411,7 +415,8 @@
          (java-mode-hook . my/gtags-mode-hook)
          (asm-mode-hook . my/gtags-mode-hook)
          (cperl-mode-hook . my/gtags-mode-hook)
-         (go-mode-hook . my/gtags-mode-hook))
+         ;;(go-mode-hook . my/gtags-mode-hook)
+         )
 
   :bind (:map ggtags-navigation-map
               ("C-g" . ggtags-navigation-mode-done))
