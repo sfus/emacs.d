@@ -171,18 +171,18 @@ With argument, do this that many times."
 
 ;;------------------------------------------------------------
 
-;;; Delete file if no contents on save
-(defun my-delete-file-if-no-contents ()
-  (when (and
-         (buffer-file-name (current-buffer))
-         (= (point-min) (point-max)))
-    (when (y-or-n-p "Delete file and kill buffer?")
-      (delete-file
-       (buffer-file-name (current-buffer)))
-      (kill-buffer (current-buffer)))))
-(if (not (memq 'my-delete-file-if-no-contents after-save-hook))
-    (setq after-save-hook
-          (cons 'my-delete-file-if-no-contents after-save-hook)))
+;; ;;; Delete file if no contents on save
+;; (defun my-delete-file-if-no-contents ()
+;;   (when (and
+;;          (buffer-file-name (current-buffer))
+;;          (= (point-min) (point-max)))
+;;     (when (y-or-n-p "Delete file and kill buffer?")
+;;       (delete-file
+;;        (buffer-file-name (current-buffer)))
+;;       (kill-buffer (current-buffer)))))
+;; (if (not (memq 'my-delete-file-if-no-contents after-save-hook))
+;;     (setq after-save-hook
+;;           (cons 'my-delete-file-if-no-contents after-save-hook)))
 
 ;;------------------------------------------------------------
 
