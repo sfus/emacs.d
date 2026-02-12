@@ -320,7 +320,8 @@
          ("C-n" . company-select-next)
          ("C-p" . company-select-previous)
          ("C-s" . company-filter-candidates)
-         ("C-i" . company-complete-selection)
+         ("RET" . company-complete-selection)
+         ("C-i" . my/company-complete-and-jump)
          :map lisp-interaction-mode-map
          ("C-M-i" . company-elisp)
          :map emacs-lisp-mode-map
@@ -339,6 +340,28 @@
   ;; suppress minibuffer message
   (fset 'company-echo-show #'ignore)
   ) ;; company
+
+(defun my/company-complete-and-jump ()
+  "Complete company selection, then jump out of sexp or to EOL."
+  (interactive)
+  (company-complete-selection)
+
+  ;; company の確定を待つ
+  (run-at-time
+   0 nil
+   (lambda ()
+     (cond
+      ;; smartparens があれば sexp の外へ
+      ((bound-and-true-p smartparens-mode)
+       (sp-end-of-sexp))
+
+      ;; paredit があれば forward
+      ((bound-and-true-p paredit-mode)
+       (paredit-forward))
+
+      ;; fallback
+      (t
+       (end-of-line))))))
 
 
 ;;; projectile
