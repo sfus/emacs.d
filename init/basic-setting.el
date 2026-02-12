@@ -65,8 +65,18 @@
 ;; use space
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+;;(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(defun my-delete-trailing-whitespace ()
+  "Delete trailing whitespace in the buffer, excluding the current line."
+  (let ((beg (point-min))
+        (end (point-max)))
+    (save-excursion
+      (save-restriction
+        (widen)
+        (narrow-to-region beg (line-beginning-position))
+        (delete-trailing-whitespace)))))
+(add-hook 'before-save-hook #'my-delete-trailing-whitespace)
 
 ;; Frame and cursor looking
 (blink-cursor-mode t)

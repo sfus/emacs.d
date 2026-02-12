@@ -1,13 +1,13 @@
 ;; ;; Revert C-h to <BS>
 ;; (global-set-key (kbd "C-h") 'delete-backward-char)
 
-;; C-h to <BS> with untabify
+;; C-h to <BS>
 (global-set-key (kbd "C-h") 'backward-delete-char-untabify)
 ;; Can be `untabify' -- turn a tab to many spaces, then delete one space;
 ;;        `hungry' -- delete all whitespace, both tabs and spaces;
 ;;        `all' -- delete all whitespace, including tabs, spaces and newlines;
 ;;        nil -- just delete one character.
-(setq backward-delete-char-untabify-method 'untabify) ;; untabify, hungry, all, nil
+(setq backward-delete-char-untabify-method 'hungry) ;; untabify, hungry, all, nil
 
 ;; Unbind C-z for other package prefix key
 (global-unset-key (kbd "C-z")) ;; default: suspend-frame
