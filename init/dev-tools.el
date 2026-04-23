@@ -17,6 +17,8 @@
   (setq ediff-split-window-function 'split-window-horizontally)
   ;;(setq ediff-diff-options "-twB")
   (setq ediff-diff-options "-t")
+  (setq ediff-show-clashes-only t)
+  (setq ediff-auto-refine 'on)
 
   ;; `Q' => quit and return terminal
   (defun my/ediff-quit-and-kill-terminal (&optional arg)

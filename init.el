@@ -54,9 +54,9 @@
   :config
   (add-to-list 'load-path (concat user-emacs-directory "el-get/el-get"))
   (add-to-list 'el-get-recipe-path (concat user-emacs-directory "el-get/el-get/recipes"))
-  (el-get-bundle syohex/emacs-import-popwin :name import-popwin)
-  (el-get-bundle sfus/org-screenshot :name org-attach-screenshot)
-  (el-get-bundle sfus/text-adjust.el :name text-adjust)
+  ;(el-get-bundle syohex/emacs-import-popwin :name import-popwin)
+  ;(el-get-bundle sfus/org-screenshot :name org-attach-screenshot)
+  ;(el-get-bundle sfus/text-adjust.el :name text-adjust)
   ) ;; el-get
 
 
