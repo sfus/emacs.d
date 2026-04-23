@@ -1,5 +1,5 @@
 ;; basic configurations
-(set-language-environment "Japanese")
+;;(set-language-environment "Japanese")
 (prefer-coding-system 'utf-8-unix)
 
 ;; locale setting (to change English datetime format)
