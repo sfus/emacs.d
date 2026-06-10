@@ -1,7 +1,9 @@
 ;;; Theme settings
 ;; theme
-(when (>= emacs-major-version 24)
-  (load-theme 'tango-dark t))
+(use-package tokyo-night
+  :ensure t
+  :config
+  (load-theme 'tokyo-night t))
 
 ;; -> https://github.com/syohex/emacs-syohex-theme/blob/master/syohex-theme.el
 (custom-set-faces
@@ -232,3 +234,18 @@
  '(elscreen-tab-other-screen-face ((t (:background "gray50" :foreground "ghost white" :height 1.0))))
 
  ) ;; custom-set-faces
+
+;; Dim frame when it loses focus, matching tmux window-style / window-active-style (TokyoNight)
+(defvar my/frame-active-fg "#C2CAF1")
+(defvar my/frame-active-bg "#1A1B25")
+(defvar my/frame-inactive-fg "#9e9e9e") ; colour247
+(defvar my/frame-inactive-bg "#303030") ; colour236
+
+(defun my/apply-frame-focus-colors ()
+  (dolist (frame (frame-list))
+    (let* ((focused (frame-focus-state frame))
+           (fg (if focused my/frame-active-fg my/frame-inactive-fg))
+           (bg (if focused my/frame-active-bg my/frame-inactive-bg)))
+      (set-face-attribute 'default frame :foreground fg :background bg))))
+
+(add-function :after after-focus-change-function #'my/apply-frame-focus-colors)
