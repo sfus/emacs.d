@@ -182,6 +182,7 @@
   (defun my/git-commit-commit-after (_unused)
     (delete-window))
   (defun my/git-commit-mode-hook ()
+    (require 'magit-commit)
     (setq-local company-backends '(company-ispell company-files company-dabbrev))
     (flyspell-mode +1)
     )
