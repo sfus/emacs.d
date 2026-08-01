@@ -1,5 +1,6 @@
 *~
 *.pch
+*.elc
 
 # for trial my emacs environment
 ac-comphist.dat
@@ -13,3 +14,6 @@ places
 projectile-bookmarks.eld
 recentf
 *.bak
+
+# local CA certificates for gnutls-trustfiles (machine specific, never commit)
+certs/

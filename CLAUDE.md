@@ -77,6 +77,14 @@ Placement rules that matter when adding config:
 - Installed packages are not vendored: `elpa/`, `el-get/`, `straight/`, `elisps/`, plus runtime state (`history`, `recentf`, `places`, `ac-comphist.dat`) are gitignored.
 - `my_snippets/` (yasnippet, wired at `init/dev-tools.el:538`) and `ac-dict/` (auto-complete, `init/dev-tools.el:288`) are resolved through `user-emacs-directory`, which is why they must be symlinked into `~/.emacs.d` for the installed setup.
 - `init-el-get.el` is the merged form of an older two-file split: `init-el-get-extra.el` was folded into it in 2019 (`8522125 Prepare to use use-package`).
+- Package downloads go through gnutls, which trusts **only** the files listed in `gnutls-trustfiles` and never the macOS keychain. On a network that terminates TLS with its own CA, `package-install` fails with `Could not create connection to melpa.org:443` while `curl` to the same host succeeds — a working `curl` proves nothing here, because curl reads the keychain and gnutls does not. Diagnose:
+  ```bash
+  # which trust files gnutls will actually use
+  emacs -Q --batch --eval '(progn (require (quote gnutls)) (dolist (f gnutls-trustfiles) (when (file-exists-p f) (message "EXISTS %s" f))))'
+  # does that bundle accept the host?
+  openssl s_client -connect melpa.org:443 -servername melpa.org </dev/null 2>/dev/null -CAfile /etc/ssl/cert.pem | grep "Verify return code"
+  ```
+  `Verify return code: 20 (unable to get local issuer certificate)` means the chain is signed by a CA that bundle does not carry — a trust problem, not connectivity. The fix is to add that CA to `gnutls-trustfiles`. Keep the certificate in `certs/` and the setting in `init-private.el`; both are outside version control, so machine-specific trust never reaches this public repository.
 - `test_emacs` is a standalone 11-line minimal settings file, unreferenced by anything else in the repo.
 
 ## Conventions
