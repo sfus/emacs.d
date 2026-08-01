@@ -172,27 +172,25 @@
   ) ;; align
 
 
-;; ;;; linum
-;; (use-package linum
-;;   :defer t
-;;   :hook ((text-mode-hook
-;;           emacs-lisp-mode-hook
-;;           c-mode-hook
-;;           c++-mode-hook
-;;           perl-mode-hook
-;;           cperl-mode-hook
-;;           ruby-mode-hook
-;;           ) . linum-mode)
-;;
-;;   :init
-;;   (if window-system
-;;       (setq linum-format "%5d")
-;;     (setq linum-format "%5d|"))
-;;
-;;   :config
-;;   ;; (global-linum-mode t)
-;;
-;;   ) ;; linum
+;;; display-line-numbers (built-in since Emacs 26)
+(use-package display-line-numbers
+  :defer t
+  ;; NOTE: write mode names without the "-hook" suffix here. use-package
+  ;; appends "-hook" only when the symbol is unbound or ends in "-mode",
+  ;; so "conf-mode-hook" would wrongly become "conf-mode-hook-hook".
+  :hook ((prog-mode text-mode conf-mode) . display-line-numbers-mode)
+
+  :config
+  ;; absolute line numbers (not 'relative / 'visual)
+  (setq display-line-numbers-type t)
+  ;; reserve at least 4 columns and never shrink the column back, so that
+  ;; the buffer text does not shift horizontally while scrolling
+  (setq display-line-numbers-width 4)
+  (setq display-line-numbers-grow-only t)
+  ;; keep numbering relative to the whole buffer while narrowed
+  (setq display-line-numbers-widen t)
+
+  ) ;; display-line-numbers
 
 
 ;;; uniquify

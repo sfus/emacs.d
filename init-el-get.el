@@ -213,7 +213,6 @@
 (el-get-bundle jedi)
 (el-get-bundle yasnippet-snippets)
 (el-get-bundle vimrc-mode)
-;; (el-get-bundle nlinum)
 (el-get-bundle k-talo/smooth-scroll.el :name smooth-scroll)
 (el-get-bundle emacs-jp/replace-colorthemes)
 (el-get-bundle kaushalmodi/ox-hugo)

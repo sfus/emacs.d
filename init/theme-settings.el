@@ -196,8 +196,6 @@
  '(magit-diff-added-highlight ((t (:foreground "#ccffcc" :background "#227722"))))
  '(magit-diff-removed-highlight ((t (:foreground "#ffcccc" :background "#772222"))))
 
- '(linum ((t :foreground "cyan" :height 0.75)))
-
  '(ediff-current-diff-A ((t (:background "color-28"))))
  '(ediff-current-diff-B ((t (:background "color-28"))))
  '(ediff-current-diff-C ((t (:background "color-28"))))
