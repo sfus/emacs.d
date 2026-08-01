@@ -65,15 +65,15 @@
 (defvar my-face-b-1 'my-face-b-1)
 (defvar my-face-b-2 'my-face-b-2)
 (defvar my-face-u-1 'my-face-u-1)
-(defadvice font-lock-mode (before my-font-lock-mode ())
+(defun my/font-lock-add-whitespace-keywords (&rest _)
+  "Highlight full-width spaces, tabs and trailing whitespace."
   (font-lock-add-keywords
    major-mode
    '(("　" 0 my-face-b-1 append)
      ("\t" 0 my-face-b-2 append)
      ("[ \t]+$" 0 my-face-u-1 append)
      )))
-(ad-enable-advice 'font-lock-mode 'before 'my-font-lock-mode)
-(ad-activate 'font-lock-mode)
+(advice-add 'font-lock-mode :before #'my/font-lock-add-whitespace-keywords)
 
 ;;------------------------------------------------------------
 
@@ -187,18 +187,26 @@ With argument, do this that many times."
 ;;------------------------------------------------------------
 
 ;;; Delete window on quit-window ('q')  ;; default: C-u q
-(defadvice quit-window
-  (before quit-and-delete-window (&optional kill window) activate)
-  (if (and (null window)
-           (not (one-window-p)))
-      (setq window (selected-window))))
+(defun my/quit-window-select-window (args)
+  "Pass the selected window to `quit-window' when ARGS omit WINDOW.
+The original advice rewrote the WINDOW argument in place, which
+`advice-add :before' cannot do, so filter the argument list instead."
+  (let ((kill (nth 0 args))
+        (window (nth 1 args)))
+    (list kill
+          (if (and (null window)
+                   (not (one-window-p)))
+              (selected-window)
+            window))))
+(advice-add 'quit-window :filter-args #'my/quit-window-select-window)
 
 ;;------------------------------------------------------------
 
 ;;; Change to read only if following from help
-(defadvice help-follow
-  (after help-follow-read-only activate)
+(defun my/help-follow-read-only (&rest _)
+  "Make the buffer read-only after following a help link."
   (setq buffer-read-only t))
+(advice-add 'help-follow :after #'my/help-follow-read-only)
 
 ;;------------------------------------------------------------
 

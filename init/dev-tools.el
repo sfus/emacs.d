@@ -110,7 +110,6 @@
   ;; https://emacs.stackexchange.com/questions/23953/how-can-i-prevent-gdb-input-output-buffer-from-aggressively-popping-up-in-fram
   (setq gdb-display-io-nopopup t)
   (setq gdb-use-separate-io-buffer nil)
-  (setq gud-tooltip-echo-area nil)
 
   :config
   (with-eval-after-load "elscreen"
@@ -586,7 +585,7 @@
 
   :config
   (global-auto-revert-mode 1)
-  (remove-hook 'find-file-hooks 'vc-find-file-hook)
+  (remove-hook 'find-file-hook 'vc-find-file-hook)
   ) ;; vc-mode
 
 

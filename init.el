@@ -120,8 +120,9 @@
   (add-hook 'after-init-hook #'my/emacs-init-time t))
 
 (defvar my/emacs-init-time-reported nil)
-(defadvice server-execute (after my/server-execute activate)
+(defun my/server-execute-report-init-time (&rest _)
   "Overwrite initial minibuffer message like `When done with this frame, type C-x 5 0'"
   (unless my/emacs-init-time-reported
-      (my/emacs-init-time))
+    (my/emacs-init-time))
   (setq my/emacs-init-time-reported t))
+(advice-add 'server-execute :after #'my/server-execute-report-init-time)

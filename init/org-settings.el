@@ -9,7 +9,7 @@
          ;;("C-M-<return>" . org-insert-todo-heading)
          ("C-c <tab>" . outline-show-all)
          ;;("C-<return>" . org-insert-subheading) ;; default: org-insert-heading-respect-content
-         ("C-m" . org-return-indent) ;; default: C-j
+         ("C-m" . my/org-return-indent) ;; default: C-j
          ("C-j" . org-return) ;; default: C-m
          ("C-c i" . org-indent-mode)
          ("C-c I" . org-attach-screenshot)
@@ -234,11 +234,17 @@
   ;;  (">" org-agenda-remove-restriction-lock))
 
   ;; Emacs tech bible ch.14.2 by rubikitch
-  (defun my/org-insert-upheading (org)
+  (defun my/org-insert-upheading (arg)
     (interactive "P")
     (org-insert-heading arg)
-    (cond ((org-on-heading-p) (org-do-promote))
-          ((org-at-item-p) (org-indent-item -1))))
+    (cond ((org-at-heading-p) (org-do-promote))
+          ((org-at-item-p) (org-outdent-item))))
+
+  (defun my/org-return-indent ()
+    "Call `org-return' with INDENT set to t.
+Replacement for the obsolete `org-return-indent'."
+    (interactive)
+    (org-return t))
 
   (defun my/org-insert-heading-dwim (arg)
     (interactive "p")
