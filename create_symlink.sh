@@ -14,5 +14,4 @@ ln -sf ${DIR}/init.sh ~/.emacs.d/init.sh
 ln -sf ${DIR}/my_snippets ~/.emacs.d/
 ln -sf ${DIR}/ac-dict ~/.emacs.d/
 ln -sf ${DIR}/init-el-get.el ~/.emacs.d/
-ln -sf ${DIR}/init-el-get-extra.el ~/.emacs.d/
 ln -sf ${DIR}/init-loader ~/.emacs.d/

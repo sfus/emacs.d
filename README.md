@@ -2,8 +2,9 @@
 
 ## Requirements
 
-- Emacs 25.0 or higher
-- `git`, `mercurial`
+- Emacs 27.1 or higher
+  - `init/theme-settings.el` uses `frame-focus-state`, which was introduced in Emacs 27.1
+- `git`
 
 
 ## Launch Emacs same as my configuration

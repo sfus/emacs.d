@@ -9,6 +9,10 @@
 (require 'cl-lib)
 
 ;; minimum key-binding
+;; NOTE: deliberately duplicated in init/global-keys.el.  This one is set
+;; before init-loader runs, so C-h keeps working even when a file under
+;; init-loader/ fails to load.  global-keys.el holds the real setting
+;; (together with backward-delete-char-untabify-method).
 (global-set-key (kbd "C-h") 'backward-delete-char-untabify)
 
 ;; if `-l' option is set, then change `user-emacs-directory'
