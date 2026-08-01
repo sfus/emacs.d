@@ -263,7 +263,7 @@ With argument, do this that many times."
         (dotimes (_ (or n 1))
           (insert str "\n"))))
     (move-to-column orig-column)))
-(global-set-key (kbd "C-M-c") 'my/editutil-duplicate-thing)
+(global-set-key (kbd "C-M-d") 'my/editutil-duplicate-thing)
 
 ;;------------------------------------------------------------
 
