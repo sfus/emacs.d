@@ -444,7 +444,6 @@
 (use-package helm-descbinds
   :ensure t
   :disabled t)
-(helm-descbinds-mode -1)
 (use-package which-key
   :ensure t
   :init
@@ -475,7 +474,8 @@
   :init
   (setq undo-tree-mode-lighter nil) ;; delete minor-mode in mode-line
   (setq undo-tree-auto-save-history nil)
-  :config
+  ;; Enable at startup.  In :config this would wait until one of the
+  ;; bound keys is pressed, leaving early edits outside the undo tree.
   (global-undo-tree-mode)
   ) ;; undo-tree
 
