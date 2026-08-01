@@ -43,10 +43,11 @@ There is **no test suite, no linter, and no byte-compile step** in this reposito
 
 1. GC threshold, `cl-lib`, the `C-h` rebind, `user-emacs-directory` rewrite, recursive `lisp/` load-path (not tracked in the repository; `create_symlink.sh` creates an empty `~/.emacs.d/lisp` for hand-placed elisp).
 2. Optional `init-private.el` from `user-emacs-directory`, loaded if present. Not part of this repository and not created by `create_symlink.sh` (in the installed setup it is a hand-made symlink into a separate private dotfiles repository).
-3. `package.el` + MELPA, then `use-package` (`use-package-enable-imenu-support` must stay set **before** `(require 'use-package)`).
-4. `el-get` (load-path/recipe-path only), `exec-path-from-shell` (copies `PATH`, `VIRTUAL_ENV`, `GOROOT`, `GOPATH`, `EIJIRO_DIR`).
-5. `init-loader-load` on `init-loader/`.
-6. macOS `pbcopy`/`pbpaste` kill-ring integration, `server-start`, init-time reporting.
+3. Every `certs/*.pem` is added to `gnutls-trustfiles`, before anything can reach the network (see the TLS note under Package management). The directory is absent unless a CA bundle has been written there.
+4. `package.el` + MELPA, then `use-package` (`use-package-enable-imenu-support` must stay set **before** `(require 'use-package)`).
+5. `el-get` (load-path/recipe-path only), `exec-path-from-shell` (copies `PATH`, `VIRTUAL_ENV`, `GOROOT`, `GOPATH`, `EIJIRO_DIR`).
+6. `init-loader-load` on `init-loader/`.
+7. macOS `pbcopy`/`pbpaste` kill-ring integration, `server-start`, init-time reporting.
 
 ### `init-loader/` is a symlink layer — never edit it
 
@@ -84,7 +85,7 @@ Placement rules that matter when adding config:
   # does that bundle accept the host?
   openssl s_client -connect melpa.org:443 -servername melpa.org </dev/null 2>/dev/null -CAfile /etc/ssl/cert.pem | grep "Verify return code"
   ```
-  `Verify return code: 20 (unable to get local issuer certificate)` means the chain is signed by a CA that bundle does not carry — a trust problem, not connectivity. The fix is to add that CA to `gnutls-trustfiles`. Keep the certificate in `certs/` and the setting in `init-private.el`; both are outside version control, so machine-specific trust never reaches this public repository.
+  `Verify return code: 20 (unable to get local issuer certificate)` means the chain is signed by a CA that bundle does not carry — a trust problem, not connectivity. The fix is to drop that CA into `certs/`: `init.el` adds every `certs/*.pem` to `gnutls-trustfiles` at startup, and the `emacs` role in the dotfiles-ansible repository writes the bundle out automatically. `certs/` is git-ignored, so machine-specific trust never reaches this public repository.
 - `test_emacs` is a standalone 11-line minimal settings file, unreferenced by anything else in the repo.
 
 ## Conventions

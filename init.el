@@ -30,6 +30,18 @@
     (load private-el)))
 
 
+;;; Extra TLS trust anchors
+;; gnutls consults only `gnutls-trustfiles', never the macOS keychain, so
+;; package.el downloads fail on a network that terminates TLS with its own CA.
+;; Any CA certificate dropped into certs/ (git-ignored) is trusted here; the
+;; emacs role in the dotfiles-ansible repository writes that bundle out.
+(let ((certs-dir (concat user-emacs-directory "certs/")))
+  (when (file-directory-p certs-dir)
+    (require 'gnutls)
+    (dolist (pem (directory-files certs-dir t "\\.pem\\'"))
+      (add-to-list 'gnutls-trustfiles pem))))
+
+
 ;;; package.el
 (add-to-list 'load-path (concat user-emacs-directory "elpa/"))
 (require 'package)
