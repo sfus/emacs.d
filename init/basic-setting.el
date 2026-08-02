@@ -54,7 +54,7 @@
  '(recentf-max-saved-items 2000)
  ;;'(recentf-auto-cleanup 600)
  '(recentf-exclude '("recentf" "/elisps/" "\\`/tmp/" "/\\.git/" "/\\.cask/" "/elpa/"
-                     "/tmp/" "/el-get/" ".loaddefs.el" "/\\.cpanm/"
+                     "/tmp/" ".loaddefs.el" "/\\.cpanm/"
                      "\\.mime-example" "\\.ido.last" "woman_cache.el"
                      "\\`/proc/" "\\`/sys/"
                      "CMakeCache.txt" "/bookmarks" ;;"\\.gz$"

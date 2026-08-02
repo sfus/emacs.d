@@ -7,11 +7,11 @@ ac-comphist.dat
 elisps/
 elpa/
 history
-el-get/
 straight/
 network-security.data
 places
 projectile-bookmarks.eld
+projects
 recentf
 *.bak
 

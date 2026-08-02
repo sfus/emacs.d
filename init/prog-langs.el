@@ -1,3 +1,12 @@
+;;; progutil
+;; My own programming utilities (progutil-ruby.el / progutil-scheme.el are
+;; bundled in the same repo and autoloaded)
+(use-package progutil
+  :vc (:url "https://github.com/sfus/emacs-progutil" :rev :newest)
+  :defer t
+  ) ;; progutil
+
+
 ;;; lsp-mode
 (use-package lsp-mode
   :ensure t
@@ -626,7 +635,10 @@
 (with-eval-after-load "scheme"
   (require 'cmuscheme)
 
-  (progutil-scheme-setup 'gauche)
+  ;; Guarded: this signals a user-error when Gauche's info files are absent,
+  ;; which would abort the rest of this block.
+  (when (executable-find "gosh")
+    (progutil-scheme-setup 'gauche))
 
   (push '("*scheme*" :stick t) popwin:special-display-config)
   (define-key scheme-mode-map (kbd "C-c C-z") 'run-scheme)
@@ -666,6 +678,13 @@
  '(eshell-scroll-show-maximum-output nil))
 
 (setq-default eshell-path-env (getenv "PATH"))
+
+;;; eshellutil
+(use-package eshellutil
+  :vc (:url "https://github.com/syohex/emacs-eshellutil" :rev :newest)
+  :defer t
+  ) ;; eshellutil
+
 (global-set-key (kbd "C-\\") 'eshellutil-popup)
 ;;;; shellscript.el
 
@@ -718,7 +737,6 @@
 
   ;; bindings
   (define-key sly-mode-map (kbd "C-M-i") 'auto-complete)
-  (define-key sly-mode-map (kbd "C-c C-d C-a") 'helm-editutil-hyperspec)
   (define-key sly-mode-map (kbd "C-c C-d C-d") 'hyperspec-lookup))
 
 (with-eval-after-load 'sly-mrepl

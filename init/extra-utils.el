@@ -494,6 +494,14 @@
   ) ;; hippie-expand
 
 
+;;; editutil
+;; My own editing utilities (helm-editutil.el is bundled in the same repo)
+(use-package editutil
+  :vc (:url "https://github.com/sfus/emacs-editutil" :rev :newest)
+  :defer t
+  ) ;; editutil
+
+
 ;;; text-adjust:
 ;; -> http://www.taiyaki.org/elisp/text-adjust/
 ;; -> http://d.hatena.ne.jp/rubikitch/20090220/text_adjust
@@ -501,6 +509,7 @@
 ;;      http://www.rubyist.net/~rubikitch/archive/text-adjust.el
 ;; -> https://github.com/uwabami/text-adjust.el
 (use-package text-adjust
+  :vc (:url "https://github.com/sfus/text-adjust.el" :rev :newest)
   :bind ("C-x M-q" . text-adjust-space)
   :init
   ;; full-width character to ignore

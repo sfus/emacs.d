@@ -63,19 +63,6 @@
 ;; -> https://github.com/jwiegley/use-package#modes-and-interpreters
 ;; :commands, :bind, :bind*, :bind-keymap, :bind-keymap*, :mode, :interpreter, or :hook
 
-;;; el-get
-;; -> https://github.com/edvorg/use-package-el-get
-(use-package el-get
-  :ensure t
-  :config
-  (add-to-list 'load-path (concat user-emacs-directory "el-get/el-get"))
-  (add-to-list 'el-get-recipe-path (concat user-emacs-directory "el-get/el-get/recipes"))
-  ;(el-get-bundle syohex/emacs-import-popwin :name import-popwin)
-  ;(el-get-bundle sfus/org-screenshot :name org-attach-screenshot)
-  ;(el-get-bundle sfus/text-adjust.el :name text-adjust)
-  ) ;; el-get
-
-
 ;;; Load environment variables by exec-path-from-shell
 ;; -> https://github.com/purcell/exec-path-from-shell
 (use-package exec-path-from-shell

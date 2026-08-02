@@ -8,8 +8,8 @@ Personal Emacs configuration (Emacs Lisp only, no application code). Requires Em
 
 The repository is designed to work in two ways at once:
 
-- **As `~/.emacs.d`** — `./create_symlink.sh` symlinks `init.el`, `init.sh`, `init-loader/`, `my_snippets/`, `ac-dict/`, `init-el-get.el` into `~/.emacs.d/`.
-- **As a self-contained sandbox** — `init.el:19-20` rewrites `user-emacs-directory` to the directory of the loaded `init.el` when started with `-l`. Every path derived from `user-emacs-directory` (snippets, ac-dict, elpa, el-get) therefore resolves inside the repo, so the config can be exercised without touching `~/.emacs.d`.
+- **As `~/.emacs.d`** — `./create_symlink.sh` symlinks `init.el`, `init.sh`, `init-loader/`, `my_snippets/`, `ac-dict/` into `~/.emacs.d/`.
+- **As a self-contained sandbox** — `init.el:19-20` rewrites `user-emacs-directory` to the directory of the loaded `init.el` when started with `-l`. Every path derived from `user-emacs-directory` (snippets, ac-dict, certs, elpa) therefore resolves inside the repo, so the config can be exercised without touching `~/.emacs.d`.
 
 ## Commands
 
@@ -45,7 +45,7 @@ There is **no test suite, no linter, and no byte-compile step** in this reposito
 2. Optional `init-private.el` from `user-emacs-directory`, loaded if present. Not part of this repository and not created by `create_symlink.sh` (in the installed setup it is a hand-made symlink into a separate private dotfiles repository).
 3. Every `certs/*.pem` is added to `gnutls-trustfiles`, before anything can reach the network (see the TLS note under Package management). The directory is absent unless a CA bundle has been written there.
 4. `package.el` + MELPA, then `use-package` (`use-package-enable-imenu-support` must stay set **before** `(require 'use-package)`).
-5. `el-get` (load-path/recipe-path only), `exec-path-from-shell` (copies `PATH`, `VIRTUAL_ENV`, `GOROOT`, `GOPATH`, `EIJIRO_DIR`).
+5. `exec-path-from-shell` (copies `PATH`, `VIRTUAL_ENV`, `GOROOT`, `GOPATH`, `EIJIRO_DIR`).
 6. `init-loader-load` on `init-loader/`.
 7. macOS `pbcopy`/`pbpaste` kill-ring integration, `server-start`, init-time reporting.
 
@@ -71,13 +71,12 @@ Placement rules that matter when adding config:
 - Own elisp with no third-party dependency → `custom-functions.el`. Third-party package setup → `extra-utils.el` (small helper `defun`s tightly coupled to one package live inside that package's block).
 - Built-in package → `builtin-settings.el`; external package → `extra-utils.el` / `dev-tools.el` / `prog-langs.el`.
 
-### Package management is split in two, and only one half is wired up
+### Package management
 
 - **package.el / MELPA** via `use-package :ensure t` (~63 occurrences under `init/`). This is what actually installs packages at startup.
-- **el-get** via `init-el-get.el` (~114 `el-get-bundle` forms, including `sfus/emacs-editutil`, `sfus/emacs-progutil`, themes, mozc). This half is dormant: **nothing in this repository loads `init-el-get.el`** (`init.el` only adds el-get's load-path), and no el-get checkout directory (`el-get/`) exists, so no `el-get-bundle` has ever run. Every package actually in use comes from package.el. Packages declared in both halves (anzu, elscreen, popwin, undo-tree, avy, paredit, helm) are therefore supplied by package.el, and `init-el-get.el` is best read as a historical inventory.
-- Installed packages are not vendored: `elpa/`, `el-get/`, `straight/`, `elisps/`, plus runtime state (`history`, `recentf`, `places`, `ac-comphist.dat`) are gitignored.
+- **package-vc** via `use-package :vc` for the handful of packages that are not on any archive (personal utility packages hosted on GitHub). None of those repositories publish tags, so every `:vc` form must pass `:rev :newest`; the default `:last-release` fails on them.
+- Installed packages are not vendored: `elpa/`, `straight/`, `elisps/`, plus runtime state (`history`, `recentf`, `places`, `ac-comphist.dat`) are gitignored.
 - `my_snippets/` (yasnippet, wired at `init/dev-tools.el:538`) and `ac-dict/` (auto-complete, `init/dev-tools.el:288`) are resolved through `user-emacs-directory`, which is why they must be symlinked into `~/.emacs.d` for the installed setup.
-- `init-el-get.el` is the merged form of an older two-file split: `init-el-get-extra.el` was folded into it in 2019 (`8522125 Prepare to use use-package`).
 - Package downloads go through gnutls, which trusts **only** the files listed in `gnutls-trustfiles` and never the macOS keychain. On a network that terminates TLS with its own CA, `package-install` fails with `Could not create connection to melpa.org:443` while `curl` to the same host succeeds — a working `curl` proves nothing here, because curl reads the keychain and gnutls does not. Diagnose:
   ```bash
   # which trust files gnutls will actually use

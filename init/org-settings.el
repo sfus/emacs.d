@@ -285,6 +285,12 @@ Replacement for the obsolete `org-return-indent'."
 
   ) ;; org-mode
 
+;;; org-attach-screenshot
+(use-package org-attach-screenshot
+  :vc (:url "https://github.com/sfus/org-screenshot" :rev :newest)
+  :defer t
+  ) ;; org-attach-screenshot
+
 ;;; org-clock
 (use-package org-clock
   :init
